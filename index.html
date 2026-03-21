@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Game Hub</title>
+
+<!-- Firebase COMPAT -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial;
+        background: #111;
+        color: white;
+        overflow: hidden;
+    }
+    .page {
+        display: none;
+        width: 100%;
+        height: 100vh;
+        padding-top: 40px;
+        text-align: center;
+    }
+    input {
+        padding: 10px;
+        margin: 5px;
+        width: 250px;
+        border-radius: 6px;
+        border: none;
+        font-size: 16px;
+    }
+    button {
+        padding: 12px 20px;
+        margin: 10px;
+        font-size: 16px;
+        border: none;
+        background: #444;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    .game-btn {
+        display: block;
+        width: 200px;
+        padding: 15px;
+        margin: 15px auto;
+        background: #333;
+        border-radius: 10px;
+        font-size: 20px;
+        text-decoration: none;
+        color: white;
+    }
+
+    .board {
+        display: grid;
+        grid-template-columns: repeat(8, 60px);
+        margin: 20px auto;
+    }
+    .white { background: #eee; width: 60px; height: 60px; }
+    .black { background: #444; width: 60px; height: 60px; }
+
+    canvas { background:#000; display:none; margin:20px auto; }
+    .ludo-board { width: 450px; margin: auto; display:none; }
+</style>
+</head>
+<body>
+
+
+<!-- LOGIN PAGE -->
+<div class="page" id="loginPage" style="display:block;">
+    <h2>Login</h2>
+
+    <!-- Email Login -->
+    <input id="loginEmail" type="email" placeholder="Email"><br>
+    <input id="loginPass" type="password" placeholder="Password"><br>
+    <button onclick="emailLogin()">Login</button>
+
+    <!-- Google Login -->
+    <button onclick="googleLogin()">Login with Google</button>
+
+    <hr style="width:300px; margin:20px auto; border:1px solid #444;">
+
+    <!-- Signup -->
+    <h3>Create Account</h3>
+    <input id="signupName" placeholder="Full Name"><br>
+    <input id="signupEmail" type="email" placeholder="Email"><br>
+    <input id="signupPass" type="password" placeholder="Password"><br>
+    <button onclick="emailSignup()">Sign Up</button>
+</div>
+
+
+<!-- HOME PAGE -->
+<div class="page" id="homePage powered by mit patel">
+    <h2 id="userName"></h2>
+    <a class="game-btn" onclick="openChess()">♟ Chess</a>
+    <a class="game-btn" onclick="openSnake()">🐍 Snake</a>
+    <a class="game-btn" onclick="openLudo()">🎲 Ludo</a>
+    <button onclick="logout()">Logout</button>
+</div>
+
+
+<!-- CHESS -->
+<div class="page" id="chessPage">
+    <h2>Chess</h2>
+    <div class="board" id="board"></div>
+    <button onclick="goHome()">Back</button>
+</div>
+
+
+<!-- SNAKE -->
+<div class="page" id="snakePage">
+    <h2>Snake</h2>
+    <canvas id="snakeCanvas" width="400" height="400"></canvas>
+    <button onclick="stopSnake(); goHome()">Back</button>
+</div>
+
+
+<!-- LUDO -->
+<div class="page" id="ludoPage">
+    <h2>Ludo</h2>
+    <img class="ludo-board" id="ludoImg"
+         src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Ludo_board.png">
+    <button onclick="goHome()">Back</button>
+</div>
+
+
+<script>
+/* ---------------- FIREBASE CONFIG ---------------- */
+const firebaseConfig = {
+    apiKey: "REPLACE",
+    authDomain: "REPLACE",
+    projectId: "REPLACE",
+    appId: "REPLACE"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+
+/* ---------------- EMAIL SIGNUP ---------------- */
+function emailSignup() {
+    let name = document.getElementById("signupName").value;
+    let email = document.getElementById("signupEmail").value;
+    let pass = document.getElementById("signupPass").value;
+
+    if (!name || !email || !pass) return alert("Fill all fields.");
+
+    auth.createUserWithEmailAndPassword(email, pass)
+    .then(user => {
+        user.user.updateProfile({ displayName: name });
+        show("homePage");
+    })
+    .catch(err => alert(err.message));
+}
+
+
+/* ---------------- EMAIL LOGIN ---------------- */
+function emailLogin() {
+    let email = document.getElementById("loginEmail").value;
+    let pass = document.getElementById("loginPass").value;
+
+    auth.signInWithEmailAndPassword(email, pass)
+    .then(() => show("homePage"))
+    .catch(err => alert(err.message));
+}
+
+
+/* ---------------- GOOGLE LOGIN ---------------- */
+function googleLogin() {
+    auth.signInWithPopup(provider)
+    .then(() => show("homePage"))
+    .catch(err => alert(err.message));
+}
+
+
+/* ---------------- LOGOUT ---------------- */
+function logout() {
+    auth.signOut().then(() => show("loginPage"));
+}
+
+
+/* ---------------- SHOW PAGE ---------------- */
+function show(page) {
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+    document.getElementById(page).style.display = "block";
+}
+
+
+/* ---------------- WHEN USER LOGGED IN ---------------- */
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById("userName").innerText =
+            "Welcome, " + (user.displayName || user.email);
+        show("homePage");
+    }
+});
+
+
+/* ---------------- CHESS ---------------- */
+function openChess() {
+    show("chessPage");
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+    let flip = false;
+
+    for (let i=0;i<8;i++) {
+        flip = !flip;
+        for (let j=0;j<8;j++) {
+            let box = document.createElement("div");
+            box.className = flip ? "white" : "black";
+            board.appendChild(box);
+            flip = !flip;
+        }
+    }
+}
+
+
+/* ---------------- SNAKE ---------------- */
+let snakeInterval;
+
+function openSnake() {
+    show("snakePage");
+    document.getElementById("snakeCanvas").style.display = "block";
+    startSnake();
+}
+
+function startSnake() {
+    let canvas = document.getElementById("snakeCanvas");
+    let ctx = canvas.getContext("2d");
+
+    let px=10, py=10, vx=0, vy=0;
+    let ax=15, ay=15;
+    let trail=[];
+    let tail=5;
+
+    document.onkeydown = e => {
+        if (e.keyCode==37) vx=-1, vy=0;
+        if (e.keyCode==38) vx=0, vy=-1;
+        if (e.keyCode==39) vx=1, vy=0;
+        if (e.keyCode==40) vx=0, vy=1;
+    };
+
+    snakeInterval = setInterval(() => {
+        px+=vx; py+=vy;
+
+        if (px<0) px=19;
+        if (px>19) px=0;
+        if (py<0) py=19;
+        if (py>19) py=0;
+
+        ctx.fillStyle="black";
+        ctx.fillRect(0,0,400,400);
+
+        ctx.fillStyle="lime";
+        for (let i=0;i<trail.length;i++){
+            ctx.fillRect(trail[i].x*20, trail[i].y*20, 18,18);
+            if (trail[i].x==px && trail[i].y==py) tail=5;
+        }
+
+        trail.push({x:px,y:py});
+        while(trail.length>tail) trail.shift();
+
+        if (ax==px && ay==py){
+            tail++;
+            ax=Math.floor(Math.random()*20);
+            ay=Math.floor(Math.random()*20);
+        }
+
+        ctx.fillStyle="red";
+        ctx.fillRect(ax*20, ay*20,18,18);
+    }, 100);
+}
+
+function stopSnake() {
+    clearInterval(snakeInterval);
+}
+
+
+/* ---------------- LUDO ---------------- */
+function openLudo() {
+    show("ludoPage");
+}
+</script>
+
+</body>
+</html>
