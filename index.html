@@ -66,7 +66,6 @@
 </head>
 <body>
 
-
 <!-- LOGIN PAGE -->
 <div class="page" id="loginPage" style="display:block;">
     <h2>Login</h2>
@@ -89,7 +88,6 @@
     <button onclick="emailSignup()">Sign Up</button>
 </div>
 
-
 <!-- HOME PAGE -->
 <div class="page" id="homePage powered by mit patel">
     <h2 id="userName"></h2>
@@ -99,7 +97,6 @@
     <button onclick="logout()">Logout</button>
 </div>
 
-
 <!-- CHESS -->
 <div class="page" id="chessPage">
     <h2>Chess</h2>
@@ -107,14 +104,12 @@
     <button onclick="goHome()">Back</button>
 </div>
 
-
 <!-- SNAKE -->
 <div class="page" id="snakePage">
     <h2>Snake</h2>
     <canvas id="snakeCanvas" width="400" height="400"></canvas>
     <button onclick="stopSnake(); goHome()">Back</button>
 </div>
-
 
 <!-- LUDO -->
 <div class="page" id="ludoPage">
@@ -124,20 +119,21 @@
     <button onclick="goHome()">Back</button>
 </div>
 
-
 <script>
 /* ---------------- FIREBASE CONFIG ---------------- */
 const firebaseConfig = {
-    apiKey: "REPLACE",
-    authDomain: "REPLACE",
-    projectId: "REPLACE",
-    appId: "REPLACE"
+  apiKey: "AIzaSyBWOKcw0mhLSmUwF6AP6Mr-OQd9oOabQBo",
+  authDomain: "gaming-zone-30ddb.firebaseapp.com",
+  projectId: "gaming-zone-30ddb",
+  storageBucket: "gaming-zone-30ddb.firebasestorage.app",
+  messagingSenderId: "4712539517",
+  appId: "1:4712539517:web:281bf85197c5a64c065814",
+  measurementId: "G-GPSW0KX5LK"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
-
 
 /* ---------------- EMAIL SIGNUP ---------------- */
 function emailSignup() {
@@ -155,7 +151,6 @@ function emailSignup() {
     .catch(err => alert(err.message));
 }
 
-
 /* ---------------- EMAIL LOGIN ---------------- */
 function emailLogin() {
     let email = document.getElementById("loginEmail").value;
@@ -166,7 +161,6 @@ function emailLogin() {
     .catch(err => alert(err.message));
 }
 
-
 /* ---------------- GOOGLE LOGIN ---------------- */
 function googleLogin() {
     auth.signInWithPopup(provider)
@@ -174,19 +168,16 @@ function googleLogin() {
     .catch(err => alert(err.message));
 }
 
-
 /* ---------------- LOGOUT ---------------- */
 function logout() {
     auth.signOut().then(() => show("loginPage"));
 }
-
 
 /* ---------------- SHOW PAGE ---------------- */
 function show(page) {
     document.querySelectorAll(".page").forEach(p => p.style.display = "none");
     document.getElementById(page).style.display = "block";
 }
-
 
 /* ---------------- WHEN USER LOGGED IN ---------------- */
 auth.onAuthStateChanged(user => {
@@ -196,7 +187,6 @@ auth.onAuthStateChanged(user => {
         show("homePage");
     }
 });
-
 
 /* ---------------- CHESS ---------------- */
 function openChess() {
@@ -215,7 +205,6 @@ function openChess() {
         }
     }
 }
-
 
 /* ---------------- SNAKE ---------------- */
 let snakeInterval;
@@ -276,7 +265,6 @@ function startSnake() {
 function stopSnake() {
     clearInterval(snakeInterval);
 }
-
 
 /* ---------------- LUDO ---------------- */
 function openLudo() {
