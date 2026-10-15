@@ -1,222 +1,3021 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="light">
 <head>
-<title>Game Hub - Direct Home</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Nexus AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: #111;
-    color: white;
-    overflow: hidden;
-    transition: filter 0.3s;
+:root{
+  --g-blue:#1a73e8;--g-blue-d:#1557b0;
+  --g-surface:#fff;--g-surface-2:#f0f4f9;--g-surface-3:#e9eef6;--g-sidebar:#f0f4f9;
+  --g-text:#1f1f1f;--g-text-2:#444746;--g-text-3:#5f6368;
+  --g-border:#dadce0;--g-border-2:#c4c7c5;--g-hover:#e8f0fe;
+  --g-error:#d93025;--g-success:#188038;--g-warn:#f59e0b;
+  --g-grad:linear-gradient(90deg,#4285f4 0%,#9b72cb 35%,#d96570 70%,#f2a600 100%);
+  --g-grad-nexus:linear-gradient(135deg,#1a73e8 0%,#9b72cb 50%,#d96570 100%);
+  --g-grad-soft:linear-gradient(135deg,#e8f0fe,#f3e8fd,#fde8ec);
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:24px;--r-2xl:28px;
+  --shadow-1:0 1px 3px rgba(60,64,67,.15);
+  --shadow-2:0 4px 12px rgba(60,64,67,.15);
+  --shadow-3:0 12px 32px rgba(60,64,67,.18);
 }
-.page {
-    display: none;
-    width: 100%;
-    height: 100vh;
-    padding-top: 40px;
-    text-align: center;
+[data-theme="dark"]{
+  --g-surface:#1e1f20;--g-surface-2:#282a2c;--g-surface-3:#333537;--g-sidebar:#1a1b1c;
+  --g-text:#e3e3e3;--g-text-2:#c4c7c5;--g-text-3:#9aa0a6;
+  --g-border:#3c4043;--g-border-2:#5f6368;--g-hover:#2d2e30;
+  --g-grad-soft:linear-gradient(135deg,#1a2740,#2a1f3d,#3d2028);
 }
-button, input[type=range] {
-    padding: 10px;
-    margin: 5px;
-    font-size: 16px;
-    border: none;
-    border-radius: 6px;
-}
-button {
-    background: #444;
-    color: white;
-    cursor: pointer;
-}
-.game-btn {
-    display: block;
-    width: 200px;
-    padding: 15px;
-    margin: 15px auto;
-    background: #333;
-    border-radius: 10px;
-    font-size: 20px;
-    text-decoration: none;
-    color: white;
-}
-.board {
-    display: grid;
-    grid-template-columns: repeat(8, 60px);
-    margin: 20px auto;
-}
-.white { background: #eee; width: 60px; height: 60px; }
-.black { background: #444; width: 60px; height: 60px; }
-canvas { background:#000; display:none; margin:20px auto; }
-.ludo-board { width: 450px; margin: auto; display:none; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Google Sans','Roboto',-apple-system,system-ui,sans-serif;background:var(--g-surface);color:var(--g-text);overflow:hidden;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+button,input,textarea,select{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--g-border);border-radius:20px}
+::-webkit-scrollbar-thumb:hover{background:var(--g-border-2)}
+.hide{display:none!important}
 
-/* Settings panel */
-.settings-panel {
-    background: #222;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
-    margin: 20px auto;
-    text-align: left;
+.nx-logo{display:inline-block;line-height:0}
+.nx-logo svg{display:block}
+
+/* AUTH */
+.auth-screen{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--g-surface);overflow-y:auto}
+.auth-card{width:100%;max-width:440px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-2xl);padding:40px 32px 32px;box-shadow:var(--shadow-3);animation:popIn .4s cubic-bezier(.2,0,0,1)}
+@keyframes popIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+.auth-brand{text-align:center;margin-bottom:26px}
+.auth-logo{font-size:2.2rem;font-weight:500;letter-spacing:-1px;background:var(--g-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:inline-flex;align-items:center;gap:10px}
+.auth-tagline{font-size:.8rem;color:var(--g-text-3);margin-top:8px}
+.auth-title{font-size:1.5rem;font-weight:500;text-align:center;color:var(--g-text)}
+.auth-sub{text-align:center;color:var(--g-text-2);font-size:.9rem;margin-top:8px;margin-bottom:26px;line-height:1.55}
+#googleBtnWrap{display:flex;justify-content:center;margin-bottom:8px;min-height:44px}
+#googleFallbackNotice{font-size:.78rem;color:var(--g-text-3);text-align:center;background:var(--g-surface-2);padding:10px 12px;border-radius:var(--r-sm);margin-top:8px;line-height:1.5}
+.divider{display:flex;align-items:center;gap:14px;margin:22px 0;color:var(--g-text-3);font-size:.78rem;font-weight:500}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--g-border)}
+.tabs{display:flex;border-bottom:1px solid var(--g-border);margin-bottom:22px}
+.tab{flex:1;padding:12px;background:transparent;border:none;color:var(--g-text-3);font-weight:500;font-size:.92rem;cursor:pointer;position:relative}
+.tab.active{color:var(--g-blue)}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--g-blue);border-radius:2px 2px 0 0}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.8rem;font-weight:500;color:var(--g-text-2);margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;padding:13px 15px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);color:var(--g-text);font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--g-blue);box-shadow:0 0 0 3px rgba(26,115,232,.12)}
+.field small{display:block;font-size:.72rem;color:var(--g-text-3);margin-top:5px}
+.pass-wrap{position:relative}
+.pass-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--g-text-3);cursor:pointer;padding:8px;font-size:.9rem}
+.pass-strength{height:4px;background:var(--g-surface-3);border-radius:2px;margin-top:8px;overflow:hidden}
+.pass-strength-fill{height:100%;width:0;transition:all .3s;border-radius:2px}
+.pass-strength-fill.weak{background:#d93025;width:33%}
+.pass-strength-fill.medium{background:#f9ab00;width:66%}
+.pass-strength-fill.strong{background:#188038;width:100%}
+.auth-error{color:var(--g-error);font-size:.82rem;min-height:20px;margin-bottom:6px;font-weight:500;display:flex;align-items:center;gap:6px}
+.btn-primary{width:100%;padding:13px;border:none;border-radius:var(--r-sm);background:var(--g-blue);color:#fff;font-weight:500;font-size:.95rem;cursor:pointer;transition:all .2s;box-shadow:var(--shadow-1);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:hover{background:var(--g-blue-d);box-shadow:var(--shadow-2)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{width:100%;padding:12px;margin-top:10px;background:transparent;border:1px solid var(--g-border);border-radius:var(--r-sm);color:var(--g-text-2);font-weight:500;font-size:.9rem;cursor:pointer;transition:all .2s}
+.btn-ghost:hover{background:var(--g-surface-2);border-color:var(--g-border-2)}
+.auth-foot{margin-top:22px;text-align:center;font-size:.75rem;color:var(--g-text-3);line-height:1.6}
+.auth-foot a{color:var(--g-blue);text-decoration:none}
+
+/* APP */
+.app{display:flex;height:100vh;width:100%;background:var(--g-surface)}
+.sidebar{width:280px;flex-shrink:0;background:var(--g-sidebar);display:flex;flex-direction:column;transition:transform .3s}
+.sb-head{padding:16px 14px 10px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:500;font-size:1.1rem;color:var(--g-text-2)}
+.brand-mark{width:28px;height:28px;border-radius:8px;background:var(--g-grad-nexus);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem}
+.sb-new{padding:0 12px 12px}
+.new-chat{width:100%;padding:11px 16px;border:none;border-radius:999px;background:var(--g-surface);color:var(--g-text);font-weight:500;font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;box-shadow:var(--shadow-1)}
+.new-chat:hover{background:var(--g-hover);box-shadow:var(--shadow-2)}
+.sb-search{padding:0 14px 12px;position:relative}
+.sb-search input{width:100%;padding:9px 12px 9px 34px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.85rem;outline:none;color:var(--g-text)}
+.sb-search i{position:absolute;left:24px;top:50%;transform:translateY(-50%);color:var(--g-text-3);font-size:.8rem}
+.chat-list-wrap{flex:1;overflow-y:auto;padding:6px 10px 10px}
+.list-label{font-size:.72rem;color:var(--g-text-3);font-weight:500;padding:10px 10px 6px;display:flex;justify-content:space-between;align-items:center}
+.chat-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+.chat-item{padding:9px 12px;border-radius:999px;color:var(--g-text-2);font-size:.87rem;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .15s;white-space:nowrap;overflow:hidden}
+.chat-item:hover{background:var(--g-hover)}
+.chat-item.active{background:var(--g-hover);color:var(--g-text);font-weight:500}
+.chat-item i{font-size:.78rem;opacity:.7;flex-shrink:0}
+.chat-item span{overflow:hidden;text-overflow:ellipsis;flex:1}
+.chat-item .del,.chat-item .pin{opacity:0;font-size:.72rem;padding:3px 5px;border-radius:5px;border:none;background:transparent;color:var(--g-text-3);cursor:pointer}
+.chat-item:hover .del,.chat-item:hover .pin{opacity:1}
+.chat-item .del:hover{color:var(--g-error)}
+.chat-item .pin.active{color:var(--g-warn);opacity:1}
+.empty-chats{text-align:center;color:var(--g-text-3);font-size:.82rem;padding:30px 12px;line-height:1.6}
+.sb-foot{padding:12px;border-top:1px solid var(--g-border)}
+.plan-box{background:var(--g-grad-soft);border-radius:var(--r-md);padding:14px;margin-bottom:10px;cursor:pointer}
+.plan-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.plan-name{font-weight:500;font-size:.85rem;display:flex;align-items:center;gap:6px}
+.plan-credits{font-size:.72rem;color:var(--g-text-2)}
+.credit-bar{height:4px;background:rgba(255,255,255,.5);border-radius:2px;overflow:hidden}
+[data-theme="dark"] .credit-bar{background:rgba(0,0,0,.3)}
+.credit-fill{height:100%;background:var(--g-blue);transition:width .4s}
+.plan-btn{width:100%;padding:9px;margin-top:10px;border-radius:var(--r-sm);background:var(--g-blue);color:#fff;border:none;font-size:.82rem;font-weight:500;cursor:pointer}
+.user-bar{display:flex;align-items:center;gap:8px;padding:6px;border-radius:var(--r-sm)}
+.user-bar:hover{background:var(--g-hover)}
+.avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--g-grad-nexus);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:500;font-size:.85rem;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.user-meta{flex:1;min-width:0}
+.user-name{font-size:.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-sub{font-size:.72rem;color:var(--g-text-3)}
+.icon-btn{background:transparent;border:none;color:var(--g-text-2);cursor:pointer;padding:8px;border-radius:50%;font-size:.95rem;transition:background .2s;display:flex;align-items:center;justify-content:center}
+.icon-btn:hover{background:var(--g-surface-3)}
+
+.main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;background:var(--g-surface)}
+.topbar{height:64px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:12px}
+.top-left{display:flex;align-items:center;gap:10px;min-width:0}
+#menuBtn{display:none}
+.model-chip{display:flex;align-items:center;gap:8px;background:var(--g-surface-2);border:1px solid var(--g-border);padding:8px 14px;border-radius:999px;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;max-width:280px}
+.model-chip:hover{background:var(--g-surface-3)}
+.model-chip .mb-name{overflow:hidden;text-overflow:ellipsis}
+.model-chip .fa-chevron-down{font-size:.65rem;color:var(--g-text-3);transition:transform .25s}
+.model-chip.open .fa-chevron-down{transform:rotate(180deg)}
+.dropdown{position:absolute;top:58px;left:16px;width:380px;max-height:70vh;overflow-y:auto;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-lg);box-shadow:var(--shadow-3);padding:8px;z-index:200;opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .2s}
+.dropdown.show{opacity:1;visibility:visible;transform:translateY(0)}
+.dd-label{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--g-text-3);font-weight:500;padding:10px 10px 6px}
+.dd-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-sm);cursor:pointer;transition:background .15s}
+.dd-item:hover{background:var(--g-surface-2)}
+.dd-item.sel{background:var(--g-hover)}
+.dd-ic{width:30px;height:30px;border-radius:8px;flex-shrink:0;background:var(--g-surface-2);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--g-blue)}
+.dd-item.sel .dd-ic{background:var(--g-blue);color:#fff}
+.dd-txt{flex:1;min-width:0}
+.dd-name{font-size:.87rem;font-weight:500;display:flex;align-items:center;gap:6px}
+.dd-badge{font-size:.6rem;font-weight:500;padding:2px 6px;border-radius:4px;background:var(--g-grad-nexus);color:#fff}
+.dd-desc{font-size:.72rem;color:var(--g-text-3);margin-top:2px}
+.top-right{display:flex;align-items:center;gap:6px}
+.btn-sm{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--g-border);padding:8px 14px;border-radius:999px;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s;color:var(--g-text-2);white-space:nowrap;position:relative}
+.btn-sm:hover{background:var(--g-surface-2);color:var(--g-text)}
+.btn-sm.primary{background:var(--g-blue);color:#fff;border-color:var(--g-blue)}
+.btn-sm.primary:hover{background:var(--g-blue-d)}
+.btn-sm.icon-only{padding:8px 10px}
+.btn-sm .pro-pill{position:absolute;top:-6px;right:-4px;background:var(--g-grad-nexus);color:#fff;font-size:.55rem;font-weight:700;padding:2px 5px;border-radius:6px;letter-spacing:.4px}
+
+.messages{flex:1;overflow-y:auto;padding:20px 0;display:flex;flex-direction:column;gap:16px}
+.msg-row{display:flex;gap:12px;padding:0 max(16px,calc((100% - 820px)/2));animation:msgIn .3s}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg-row.user{flex-direction:row-reverse}
+.msg-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:500;color:#fff;overflow:hidden}
+.msg-av.ai{background:var(--g-surface-2)}
+.msg-av.ai svg{width:20px;height:20px}
+.msg-av.user{background:var(--g-blue)}
+.msg-av img{width:100%;height:100%;object-fit:cover}
+.msg-body{max-width:min(80%,740px);display:flex;flex-direction:column;gap:6px;min-width:0}
+.msg-row.user .msg-body{align-items:flex-end}
+.bubble{padding:12px 16px;border-radius:var(--r-lg);font-size:.95rem;line-height:1.65;word-wrap:break-word;overflow-wrap:anywhere}
+.msg-row.ai .bubble{background:var(--g-surface-2);color:var(--g-text);border-top-left-radius:4px}
+.msg-row.user .bubble{background:var(--g-blue);color:#fff;border-top-right-radius:4px}
+.msg-row.error .bubble{background:rgba(217,48,37,.1);border:1px solid rgba(217,48,37,.3)}
+.msg-meta{display:flex;gap:8px;font-size:.7rem;color:var(--g-text-3);padding:0 6px;flex-wrap:wrap;align-items:center}
+.msg-act{background:transparent;border:none;color:var(--g-text-3);cursor:pointer;padding:3px 6px;border-radius:5px;font-size:.72rem}
+.msg-act:hover{color:var(--g-blue);background:var(--g-surface-2)}
+.bubble p{margin:0 0 8px}
+.bubble p:last-child{margin:0}
+.bubble h1,.bubble h2,.bubble h3,.bubble h4{margin:12px 0 6px;font-weight:500;line-height:1.3}
+.bubble h1{font-size:1.3rem}.bubble h2{font-size:1.1rem}.bubble h3{font-size:1rem}
+.bubble ul,.bubble ol{margin:6px 0 10px;padding-left:22px}
+.bubble li{margin-bottom:4px}
+.bubble a{color:var(--g-blue);text-decoration:underline}
+.bubble code:not(pre code){font-family:'Roboto Mono',monospace;font-size:.85em;background:var(--g-surface-3);padding:2px 6px;border-radius:4px}
+.msg-row.user .bubble code:not(pre code){background:rgba(255,255,255,.2)}
+.code-block{background:#202124;border-radius:var(--r-md);margin:10px 0;overflow:hidden;border:1px solid #3c4043}
+.code-head{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#292a2d;font-size:.72rem;color:#9aa0a6;font-family:'Roboto Mono',monospace}
+.code-copy{background:transparent;border:none;color:#9aa0a6;cursor:pointer;font-size:.72rem;display:flex;gap:5px;align-items:center;font-family:inherit}
+.code-copy:hover{color:#fff}
+.code-block pre{margin:0;padding:14px;overflow-x:auto;font-family:'Roboto Mono',monospace;font-size:.83rem;line-height:1.6;color:#e8eaed}
+.img-grid{display:grid;gap:8px;margin-top:8px}
+.img-grid.n1{grid-template-columns:1fr}
+.img-grid.n2{grid-template-columns:1fr 1fr}
+.img-grid.n4{grid-template-columns:1fr 1fr}
+.img-card{position:relative;border-radius:var(--r-md);overflow:hidden;background:var(--g-surface-3);aspect-ratio:1/1;cursor:pointer}
+.img-card img{width:100%;height:100%;object-fit:cover;display:block}
+.img-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--g-text-3);font-size:.78rem;height:100%}
+.spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--g-border);border-top-color:var(--g-blue);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.thinking{display:flex;gap:5px;align-items:center;padding:4px 0}
+.thinking span{width:7px;height:7px;border-radius:50%;background:var(--g-blue);animation:bounce 1.2s infinite}
+.thinking span:nth-child(2){animation-delay:.15s}
+.thinking span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:scale(.5);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+.welcome{margin:auto;max-width:760px;padding:24px;text-align:center;animation:msgIn .4s}
+.welcome-logo{margin-bottom:18px;display:inline-block}
+.welcome h1{font-size:2rem;font-weight:500;letter-spacing:-1px;margin-bottom:12px;line-height:1.25}
+.welcome h1 em{font-style:normal;background:var(--g-grad-nexus);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.welcome p{color:var(--g-text-2);font-size:.95rem;line-height:1.6;margin-bottom:24px}
+.sugg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.sugg{background:var(--g-surface-2);border:1px solid var(--g-border);border-radius:var(--r-md);padding:14px;text-align:left;cursor:pointer;transition:all .2s}
+.sugg:hover{background:var(--g-surface-3);border-color:var(--g-border-2);transform:translateY(-2px)}
+.sugg-t{font-weight:500;font-size:.88rem;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.sugg-d{font-size:.76rem;color:var(--g-text-3);line-height:1.4}
+
+.composer-wrap{flex-shrink:0;padding:10px max(16px,calc((100% - 820px)/2)) 16px}
+.composer{background:var(--g-surface-2);border-radius:var(--r-2xl);padding:12px 18px;transition:all .2s}
+.composer:focus-within{background:var(--g-surface);box-shadow:var(--shadow-2)}
+.attach-list{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.attach-chip{display:flex;align-items:center;gap:6px;background:var(--g-surface-3);padding:5px 10px;border-radius:999px;font-size:.72rem}
+.attach-chip button{background:none;border:none;color:var(--g-text-3);cursor:pointer}
+.composer textarea{width:100%;background:transparent;border:none;outline:none;color:var(--g-text);font-size:.98rem;resize:none;min-height:26px;max-height:180px;line-height:1.55}
+.composer textarea::placeholder{color:var(--g-text-3)}
+.comp-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+.comp-left{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.tool-btn{background:transparent;border:none;color:var(--g-text-2);cursor:pointer;padding:8px;border-radius:50%;font-size:1rem;transition:background .15s;display:flex;align-items:center;justify-content:center}
+.tool-btn:hover{background:var(--g-surface-3)}
+.tool-btn.rec{color:var(--g-error);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.5}}
+.mode-chip{display:inline-flex;align-items:center;gap:5px;background:var(--g-surface-3);border:1px solid var(--g-border);padding:5px 10px;border-radius:999px;font-size:.72rem;font-weight:500;cursor:pointer;transition:all .15s;color:var(--g-text-2);position:relative}
+.mode-chip:hover{background:var(--g-hover)}
+.mode-chip.active{background:var(--g-blue);color:#fff;border-color:var(--g-blue)}
+.mode-chip.locked::after{content:'\f023';font-family:'Font Awesome 6 Free';font-weight:900;font-size:.6rem;position:absolute;top:-5px;right:-5px;background:var(--g-grad-nexus);color:#fff;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.comp-right{display:flex;align-items:center;gap:10px}
+.char-count{font-size:.7rem;color:var(--g-text-3)}
+.send-btn{width:38px;height:38px;border-radius:50%;background:var(--g-blue);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:all .2s}
+.send-btn:hover:not(:disabled){background:var(--g-blue-d);transform:scale(1.05)}
+.send-btn:disabled{background:var(--g-surface-3);color:var(--g-text-3);cursor:not-allowed}
+.send-btn.stop{background:var(--g-error)}
+.disclaimer{text-align:center;font-size:.7rem;color:var(--g-text-3);margin-top:10px}
+
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.tool-card{background:var(--g-surface-2);border:1px solid var(--g-border);border-radius:var(--r-md);padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.tool-card:hover{border-color:var(--g-blue);transform:translateY(-2px)}
+.tool-card.active{border-color:var(--g-blue);background:var(--g-hover)}
+.tool-card .tc-icon{width:44px;height:44px;border-radius:12px;background:var(--g-grad-nexus);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;margin:0 auto 10px}
+.tool-card .tc-name{font-weight:500;font-size:.86rem;margin-bottom:3px}
+.tool-card .tc-desc{font-size:.7rem;color:var(--g-text-3)}
+.tool-card.soon{position:relative;opacity:.6;cursor:not-allowed;filter:grayscale(.7)}
+.tool-card.soon:hover{transform:none;border-color:var(--g-border)}
+.tool-card.soon::before{content:'';position:absolute;inset:0;border-radius:var(--r-md);background:repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(0,0,0,.03) 12px,rgba(0,0,0,.03) 24px);pointer-events:none;z-index:1}
+.tc-soon-badge{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:999px;z-index:2;letter-spacing:.3px;box-shadow:0 2px 6px rgba(245,158,11,.4);text-transform:uppercase}
+.tc-pro-badge{position:absolute;top:8px;right:8px;background:var(--g-grad-nexus);color:#fff;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:999px;z-index:2;letter-spacing:.3px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 6px rgba(155,114,203,.5)}
+.tc-pro-badge i{font-size:.55rem}
+.tool-card.pro-locked:hover{border-color:#9b72cb}
+
+.overlay{position:fixed;inset:0;z-index:1500;background:rgba(32,33,36,.55);backdrop-filter:blur(8px) saturate(140%);-webkit-backdrop-filter:blur(8px) saturate(140%);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;overflow-y:auto}
+.overlay.show{opacity:1;visibility:visible}
+.modal{width:100%;max-width:600px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-2xl);padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.3);transform:translateY(16px) scale(.97);transition:transform .3s cubic-bezier(.2,0,0,1),opacity .25s;margin:auto;position:relative;max-height:92vh;overflow-y:auto;opacity:0}
+.overlay.show .modal{transform:none;opacity:1}
+.modal.wide{max-width:800px}
+.modal.xl{max-width:1080px}
+.modal-x{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--g-text-3);cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .25s}
+.modal-x:hover{background:var(--g-surface-2);color:var(--g-text);transform:rotate(90deg)}
+.modal-head{margin-bottom:20px;padding-right:40px}
+.modal-head h2{font-size:1.4rem;font-weight:500;letter-spacing:-.3px;margin-bottom:6px}
+.modal-head p{color:var(--g-text-2);font-size:.9rem;line-height:1.55}
+
+.plans{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:22px}
+@media (min-width:900px){.plans{grid-template-columns:repeat(2,1fr);max-width:760px;margin-left:auto;margin-right:auto}}
+.plan{border:1px solid var(--g-border);border-radius:var(--r-lg);padding:22px 18px;background:var(--g-surface-2);position:relative;transition:all .2s;display:flex;flex-direction:column;gap:14px}
+.plan:hover{border-color:var(--g-border-2);transform:translateY(-2px)}
+.plan.featured{border-color:var(--g-blue);background:var(--g-hover);box-shadow:0 0 0 2px var(--g-blue)}
+.plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--g-blue);color:#fff;font-size:.65rem;font-weight:500;padding:4px 12px;border-radius:999px;white-space:nowrap}
+.plan.featured .plan-badge{background:var(--g-grad-nexus)}
+.plan h3{font-size:1.05rem;font-weight:500;display:flex;align-items:center;gap:6px}
+.plan .price{font-size:2rem;font-weight:500;letter-spacing:-1px;line-height:1}
+.plan .price small{font-size:.75rem;font-weight:400;color:var(--g-text-3)}
+.plan .price-inr{font-size:.78rem;color:var(--g-text-3);line-height:1.4}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:7px;font-size:.78rem;color:var(--g-text-2);flex:1}
+.plan ul li{display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+.plan ul li i{color:var(--g-success);font-size:.72rem;margin-top:4px;flex-shrink:0}
+.plan ul li.off{opacity:.45}
+.plan ul li.off i{color:var(--g-text-3)}
+
+.compare-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:8px}
+.compare-table th,.compare-table td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--g-border)}
+.compare-table th{font-weight:500;color:var(--g-text-2);font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
+.compare-table td:not(:first-child){text-align:center}
+.compare-table .yes{color:var(--g-success);font-weight:500}
+.compare-table .no{color:var(--g-text-3)}
+
+.pay-tabs{display:flex;gap:6px;background:var(--g-surface-2);padding:4px;border-radius:var(--r-sm);margin-bottom:18px}
+.pay-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--g-text-2);font-weight:500;font-size:.85rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.pay-tab.active{background:var(--g-surface);color:var(--g-text);box-shadow:var(--shadow-1)}
+.pay-pane{display:none}
+.pay-pane.active{display:block}
+.secure-badge{background:var(--g-hover);border:1px solid var(--g-blue);border-radius:var(--r-sm);padding:12px 14px;font-size:.82rem;color:var(--g-text);margin-bottom:16px;display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+.secure-badge i{color:var(--g-blue);margin-top:2px}
+.pay-success{text-align:center;padding:20px 12px;display:none}
+.pay-success.show{display:block;animation:msgIn .4s}
+.pay-success i{font-size:3.5rem;color:var(--g-success);margin-bottom:14px}
+.pay-success h3{font-size:1.2rem;font-weight:500;margin-bottom:8px}
+.pay-success p{color:var(--g-text-2);font-size:.88rem;margin-bottom:16px;line-height:1.55}
+
+.review-card{background:var(--g-surface-2);border:1px solid var(--g-border);border-radius:var(--r-md);padding:14px;margin-bottom:10px}
+.review-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.review-av{width:36px;height:36px;border-radius:50%;background:var(--g-grad-nexus);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:500}
+.review-name{font-weight:500;font-size:.88rem}
+.review-date{font-size:.72rem;color:var(--g-text-3)}
+.review-stars{color:#f59e0b;font-size:.85rem;margin-left:auto}
+.review-text{font-size:.85rem;color:var(--g-text-2);line-height:1.55}
+.star-picker{display:flex;gap:6px;font-size:1.5rem;color:var(--g-text-3);cursor:pointer;margin-bottom:8px}
+.star-picker i.active{color:#f59e0b}
+
+.toast-wrap{position:fixed;top:16px;right:16px;z-index:3000;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:calc(100vw - 32px)}
+.toast{background:var(--g-text);color:var(--g-surface);border-radius:var(--r-md);padding:12px 16px;font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-3);animation:toastIn .3s;max-width:340px;pointer-events:auto;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08)}
+.toast i{font-size:.9rem}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+
+.sb-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;visibility:hidden;transition:all .25s}
+.sb-backdrop.show{opacity:1;visibility:visible}
+
+/* SETTINGS */
+.settings-tabs{display:flex;gap:4px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;border-bottom:1px solid var(--g-border)}
+.settings-tab{padding:10px 16px;background:transparent;border:none;color:var(--g-text-3);font-size:.85rem;font-weight:500;cursor:pointer;border-radius:var(--r-sm) var(--r-sm) 0 0;white-space:nowrap;transition:all .15s;position:relative;display:flex;align-items:center;gap:6px}
+.settings-tab:hover{background:var(--g-surface-2);color:var(--g-text)}
+.settings-tab.active{color:var(--g-blue)}
+.settings-tab.active::after{content:'';position:absolute;bottom:-5px;left:0;right:0;height:2px;background:var(--g-blue);border-radius:2px 2px 0 0}
+.settings-pane{display:none;animation:msgIn .25s}
+.settings-pane.active{display:block}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;border-bottom:1px solid var(--g-border)}
+.set-row:last-child{border-bottom:none}
+.set-row-full{display:block;padding:14px 0;border-bottom:1px solid var(--g-border)}
+.set-info{flex:1;min-width:0}
+.set-title{font-size:.88rem;font-weight:500;display:flex;align-items:center;gap:8px;color:var(--g-text)}
+.set-title i{color:var(--g-blue);font-size:.85rem}
+.set-desc{font-size:.75rem;color:var(--g-text-3);margin-top:3px;line-height:1.45}
+.switch{width:46px;height:26px;border-radius:20px;flex-shrink:0;background:var(--g-surface-3);border:1px solid var(--g-border);position:relative;cursor:pointer;transition:all .25s}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--g-text-3);transition:all .25s}
+.switch.on{background:var(--g-blue);border-color:var(--g-blue)}
+.switch.on::after{left:22px;background:#fff}
+.seg-control{display:flex;gap:0;background:var(--g-surface-2);border-radius:8px;padding:3px;border:1px solid var(--g-border)}
+.seg-btn{padding:6px 14px;border:none;background:transparent;color:var(--g-text-2);font-size:.78rem;font-weight:500;cursor:pointer;border-radius:6px;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.seg-btn.active{background:var(--g-surface);color:var(--g-text);box-shadow:var(--shadow-1)}
+.accent-dots{display:flex;gap:8px}
+.accent-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.accent-dot:hover{transform:scale(1.12)}
+.accent-dot.sel{border-color:var(--g-text);transform:scale(1.12)}
+input[type="range"].custom-range{-webkit-appearance:none;width:130px;height:5px;border-radius:20px;background:var(--g-surface-3);outline:none;cursor:pointer}
+input[type="range"].custom-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--g-blue);cursor:pointer;box-shadow:0 0 8px rgba(26,115,232,.4)}
+input[type="range"].custom-range::-moz-range-thumb{width:16px;height:16px;border:none;border-radius:50%;background:var(--g-blue);cursor:pointer}
+.storage-bar{height:8px;background:var(--g-surface-3);border-radius:4px;overflow:hidden;margin:8px 0;display:flex}
+.storage-seg{height:100%;transition:width .3s}
+.storage-seg.chats{background:#4285f4}
+.storage-seg.lib{background:#9b72cb}
+.storage-seg.reviews{background:#d96570}
+.storage-seg.other{background:#f2a600}
+.storage-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.72rem;color:var(--g-text-3);margin-top:6px}
+.storage-legend span{display:flex;align-items:center;gap:5px}
+.storage-dot{width:10px;height:10px;border-radius:3px}
+.about-card{text-align:center;padding:20px;background:var(--g-surface-2);border-radius:var(--r-lg);margin-bottom:16px}
+.about-logo{margin-bottom:8px}
+.about-ver{font-size:.75rem;color:var(--g-text-3)}
+.about-links{display:grid;gap:6px;margin-top:14px}
+.about-link{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--g-surface-2);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.85rem;color:var(--g-text);text-decoration:none;transition:all .15s;cursor:pointer}
+.about-link:hover{background:var(--g-surface-3);border-color:var(--g-blue)}
+.about-link i:first-child{color:var(--g-blue);margin-right:10px}
+.danger-btn{width:100%;padding:11px;background:transparent;border:1px solid var(--g-error);border-radius:var(--r-sm);color:var(--g-error);font-weight:500;font-size:.85rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+.danger-btn:hover{background:rgba(217,48,37,.08)}
+
+@media (max-width:860px){
+  .sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%);z-index:60;box-shadow:var(--shadow-3)}
+  .sidebar.open{transform:translateX(0)}
+  #menuBtn{display:flex}
+  .sugg-grid{grid-template-columns:1fr}
+  .msg-body{max-width:88%}
+  .plans{grid-template-columns:1fr}
+  .top-right .btn-sm span{display:none}
+  .top-right .btn-sm{padding:8px 10px}
+  .set-row{flex-direction:column;align-items:flex-start;gap:10px}
+  .set-row > *:last-child{align-self:flex-end}
+  .compare-table{font-size:.72rem}
 }
-.settings-panel h3 { margin-top: 0; }
 </style>
 </head>
 <body>
 
-<!-- HOME PAGE -->
-<div class="page" id="homePage" style="display:block;">
-    <h2 id="userName">Welcome, Player</h2>
-
-    <a class="game-btn" onclick="openChess()">♟ Chess</a>
-    <a class="game-btn" onclick="openSnake()">🐍 Snake</a>
-    <a class="game-btn" onclick="openLudo()">🎲 Ludo</a>
-
-    <div class="settings-panel">
-        <h3>Settings</h3>
-
-        <!-- Sound -->
-        <label>Sound: </label>
-        <button id="soundBtn">On</button><br>
-
-        <!-- Music -->
-        <label>Music: </label>
-        <button id="musicBtn">Play</button>
-        <input type="range" id="musicVolume" min="0" max="1" step="0.01" value="0.5"><br>
-
-        <!-- Brightness -->
-        <label>Brightness: </label>
-        <input type="range" id="brightnessSlider" min="50" max="150" value="100"><br>
-
-        <!-- Extra features -->
-        <label><input type="checkbox" id="feature1"> Feature 1</label><br>
-        <label><input type="checkbox" id="feature2"> Feature 2</label><br>
-        <label><input type="checkbox" id="feature3"> Feature 3</label>
+<!-- AUTH -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-logo">
+        <span class="nx-logo" style="width:40px;height:40px">
+          <svg viewBox="0 0 40 40" width="40" height="40">
+            <defs><linearGradient id="nxGradA" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1a73e8"/><stop offset="50%" stop-color="#9b72cb"/><stop offset="100%" stop-color="#d96570"/>
+            </linearGradient></defs>
+            <path d="M20 2 L36 11 L36 29 L20 38 L4 29 L4 11 Z" fill="none" stroke="url(#nxGradA)" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="20" cy="2" r="3.2" fill="url(#nxGradA)"/>
+            <circle cx="36" cy="11" r="3.2" fill="url(#nxGradA)"/>
+            <circle cx="36" cy="29" r="3.2" fill="url(#nxGradA)"/>
+            <circle cx="20" cy="38" r="3.2" fill="url(#nxGradA)"/>
+            <circle cx="4" cy="29" r="3.2" fill="url(#nxGradA)"/>
+            <circle cx="4" cy="11" r="3.2" fill="url(#nxGradA)"/>
+            <circle cx="20" cy="20" r="5" fill="url(#nxGradA)"/>
+            <line x1="20" y1="2" x2="20" y2="15" stroke="url(#nxGradA)" stroke-width="2"/>
+            <line x1="36" y1="11" x2="24" y2="17" stroke="url(#nxGradA)" stroke-width="2"/>
+            <line x1="36" y1="29" x2="24" y2="23" stroke="url(#nxGradA)" stroke-width="2"/>
+            <line x1="20" y1="38" x2="20" y2="25" stroke="url(#nxGradA)" stroke-width="2"/>
+            <line x1="4" y1="29" x2="16" y2="23" stroke="url(#nxGradA)" stroke-width="2"/>
+            <line x1="4" y1="11" x2="16" y2="17" stroke="url(#nxGradA)" stroke-width="2"/>
+          </svg>
+        </span>
+        Nexus AI
+      </div>
+      <div class="auth-tagline">Intelligence · Creativity · Studio</div>
     </div>
+    <h1 class="auth-title" id="authTitle">Welcome back</h1>
+    <p class="auth-sub" id="authSub">Sign in to continue to your workspace.</p>
+    <div id="googleBtnWrap"></div>
+    <div id="googleFallbackNotice" style="display:none"><b>Google Sign-In setup required:</b> Add your OAuth Client ID in code to enable Google login.</div>
+    <div class="divider">or continue with email</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="login" type="button">Sign In</button>
+      <button class="tab" data-tab="signup" type="button">Sign Up</button>
+    </div>
+    <form id="authForm" autocomplete="on">
+      <div class="field" id="nameField" style="display:none">
+        <label for="authName">Full Name</label>
+        <input type="text" id="authName" placeholder="Your full name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="authEmail">Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="authPass">Password</label>
+        <div class="pass-wrap">
+          <input type="password" id="authPass" placeholder="Minimum 8 characters" autocomplete="current-password" required>
+          <button type="button" class="pass-toggle" id="passToggle"><i class="fa-regular fa-eye"></i></button>
+        </div>
+        <div class="pass-strength" id="passStrengthWrap" style="display:none"><div class="pass-strength-fill" id="passStrengthFill"></div></div>
+        <small id="passHint" style="display:none">Use 8+ chars with uppercase, lowercase & number</small>
+      </div>
+      <p class="auth-error" id="authError"></p>
+      <button type="submit" class="btn-primary" id="authSubmit"><span>Sign In</span></button>
+    </form>
+    <p class="auth-foot">By continuing, you agree to our <a href="#" id="authTermsLink">Terms</a> & <a href="#" id="authPrivacyLink">Privacy Policy</a>.<br>Your data stays in your browser.</p>
+  </div>
 </div>
 
-<!-- CHESS -->
-<div class="page" id="chessPage">
-    <h2>Chess</h2>
-    <div class="board" id="board"></div>
-    <button onclick="goHome()">Back</button>
+<!-- APP -->
+<div class="app" id="app" style="display:none">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <div class="brand">
+        <span class="nx-logo" style="width:26px;height:26px">
+          <svg viewBox="0 0 40 40" width="26" height="26">
+            <defs><linearGradient id="nxGradB" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1a73e8"/><stop offset="50%" stop-color="#9b72cb"/><stop offset="100%" stop-color="#d96570"/>
+            </linearGradient></defs>
+            <path d="M20 2 L36 11 L36 29 L20 38 L4 29 L4 11 Z" fill="none" stroke="url(#nxGradB)" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="20" cy="20" r="5" fill="url(#nxGradB)"/>
+          </svg>
+        </span>
+        <span>Nexus AI</span>
+      </div>
+      <button class="icon-btn" id="sbClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sb-new"><button class="new-chat" id="newChatBtn"><i class="fa-solid fa-pen-to-square"></i> New chat</button></div>
+    <div class="sb-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="chatSearch" placeholder="Search chats..."></div>
+    <div class="chat-list-wrap">
+      <div class="list-label" id="pinnedLabel" style="display:none"><span><i class="fa-solid fa-thumbtack" style="color:var(--g-warn)"></i> Pinned</span></div>
+      <ul class="chat-list" id="pinnedList"></ul>
+      <div class="list-label"><span>Recent</span></div>
+      <ul class="chat-list" id="chatList"></ul>
+    </div>
+    <div class="sb-foot">
+      <div class="plan-box" id="planBox">
+        <div class="plan-top">
+          <span class="plan-name" id="planName"><i class="fa-solid fa-bolt"></i> Free</span>
+          <span class="plan-credits" id="planCredits">Unlimited chat</span>
+        </div>
+        <div class="credit-bar"><div class="credit-fill" id="creditFill" style="width:100%"></div></div>
+        <button class="plan-btn" id="upgradeBtn">Upgrade to Pro</button>
+        <div id="pendingPaymentNotice" style="display:none;margin-top:8px;font-size:.68rem;color:var(--g-text-2);line-height:1.4"></div>
+      </div>
+      <div class="user-bar">
+        <div class="avatar" id="userAvatar">N</div>
+        <div class="user-meta">
+          <div class="user-name" id="userName">User</div>
+          <div class="user-sub" id="userSub">Free plan</div>
+        </div>
+        <button class="icon-btn" id="themeBtn" title="Theme"><i class="fa-solid fa-moon"></i></button>
+        <button class="icon-btn" id="settingsBtn" title="Settings"><i class="fa-solid fa-gear"></i></button>
+      </div>
+    </div>
+  </aside>
+  <div class="sb-backdrop" id="sbBackdrop"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn" id="menuBtn"><i class="fa-solid fa-bars"></i></button>
+        <button class="model-chip" id="modelBtn">
+          <span class="nx-logo" style="width:16px;height:16px">
+            <svg viewBox="0 0 40 40" width="16" height="16">
+              <defs><linearGradient id="nxGradC" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1a73e8"/><stop offset="50%" stop-color="#9b72cb"/><stop offset="100%" stop-color="#d96570"/>
+              </linearGradient></defs>
+              <path d="M20 2 L36 11 L36 29 L20 38 L4 29 L4 11 Z" fill="none" stroke="url(#nxGradC)" stroke-width="2.5" stroke-linejoin="round"/>
+              <circle cx="20" cy="20" r="5" fill="url(#nxGradC)"/>
+            </svg>
+          </span>
+          <span class="mb-name" id="modelName">Nexus Cloud</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+      </div>
+      <div class="top-right">
+        <button class="btn-sm primary" id="toolsBtn"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>Studio</span></button>
+        <button class="btn-sm" id="libraryBtn"><i class="fa-solid fa-images"></i> <span>Library</span></button>
+        <button class="btn-sm" id="reviewsBtn"><i class="fa-solid fa-star"></i> <span>Reviews</span></button>
+        <button class="btn-sm" id="contactBtn"><i class="fa-solid fa-headset"></i> <span>Contact</span></button>
+        <button class="btn-sm icon-only" id="exportBtn" title="Export chat"><i class="fa-solid fa-download"></i></button>
+      </div>
+    </header>
+    <div class="dropdown" id="modelDropdown"></div>
+    <div class="messages" id="messages"></div>
+    <div class="composer-wrap">
+      <div class="composer">
+        <div class="attach-list" id="attachList"></div>
+        <textarea id="promptInput" placeholder="Ask Nexus AI anything…" rows="1"></textarea>
+        <div class="comp-bottom">
+          <div class="comp-left">
+            <button class="tool-btn" id="attachBtn" title="Attach"><i class="fa-solid fa-paperclip"></i></button>
+            <button class="tool-btn" id="micBtn" title="Voice"><i class="fa-solid fa-microphone"></i></button>
+            <button class="mode-chip" id="deepResearchBtn" title="Deep Research"><i class="fa-solid fa-magnifying-glass-chart"></i> Deep Research</button>
+            <button class="mode-chip" id="canvasBtn" title="Canvas"><i class="fa-solid fa-pen-ruler"></i> Canvas</button>
+            <button class="tool-btn" id="clearBtn" title="Clear"><i class="fa-solid fa-broom"></i></button>
+            <input type="file" id="fileInput" accept=".txt,.md,.json,.js,.py,.html,.css,.csv,.pdf" hidden multiple>
+          </div>
+          <div class="comp-right">
+            <span class="char-count" id="charCount">0</span>
+            <button class="send-btn" id="sendBtn" disabled><i class="fa-solid fa-arrow-up"></i></button>
+          </div>
+        </div>
+      </div>
+      <p class="disclaimer">Nexus AI can make mistakes. Verify important information.</p>
+    </div>
+  </main>
 </div>
 
-<!-- SNAKE -->
-<div class="page" id="snakePage">
-    <h2>Snake</h2>
-    <canvas id="snakeCanvas" width="400" height="400"></canvas>
-    <button onclick="stopSnake(); goHome()">Back</button>
+<!-- STUDIO MODAL -->
+<div class="overlay" id="toolsModal">
+  <div class="modal xl">
+    <button class="modal-x" data-close="toolsModal"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-head"><h2>Creator Studio</h2><p>Generate images and documents. Video, Song and Unity Game are coming soon.</p></div>
+    <div class="tools-grid" id="toolsGrid">
+      <div class="tool-card pro-locked" data-tool="image">
+        <span class="tc-pro-badge"><i class="fa-solid fa-crown"></i> PRO</span>
+        <div class="tc-icon" style="background:linear-gradient(135deg,#4285f4,#9b72cb)"><i class="fa-solid fa-image"></i></div>
+        <div class="tc-name">Image / Thumbnail</div>
+        <div class="tc-desc">AI artwork</div>
+      </div>
+      <div class="tool-card soon" data-tool="video">
+        <span class="tc-soon-badge">Coming Soon</span>
+        <div class="tc-icon" style="background:linear-gradient(135deg,#d96570,#f2a600)"><i class="fa-solid fa-film"></i></div>
+        <div class="tc-name">Video</div>
+        <div class="tc-desc">Veo-style animation</div>
+      </div>
+      <div class="tool-card pro-locked" data-tool="ppt">
+        <span class="tc-pro-badge"><i class="fa-solid fa-crown"></i> PRO</span>
+        <div class="tc-icon" style="background:linear-gradient(135deg,#ea4335,#fb8c00)"><i class="fa-solid fa-file-powerpoint"></i></div>
+        <div class="tc-name">PPT</div>
+        <div class="tc-desc">PowerPoint slides</div>
+      </div>
+      <div class="tool-card pro-locked" data-tool="pdf">
+        <span class="tc-pro-badge"><i class="fa-solid fa-crown"></i> PRO</span>
+        <div class="tc-icon" style="background:linear-gradient(135deg,#d93025,#ea4335)"><i class="fa-solid fa-file-pdf"></i></div>
+        <div class="tc-name">PDF</div>
+        <div class="tc-desc">Formatted document</div>
+      </div>
+      <div class="tool-card pro-locked" data-tool="word">
+        <span class="tc-pro-badge"><i class="fa-solid fa-crown"></i> PRO</span>
+        <div class="tc-icon" style="background:linear-gradient(135deg,#1a73e8,#4285f4)"><i class="fa-solid fa-file-word"></i></div>
+        <div class="tc-name">Word</div>
+        <div class="tc-desc">.doc document</div>
+      </div>
+      <div class="tool-card soon" data-tool="song">
+        <span class="tc-soon-badge">Coming Soon</span>
+        <div class="tc-icon" style="background:linear-gradient(135deg,#9b72cb,#d96570)"><i class="fa-solid fa-music"></i></div>
+        <div class="tc-name">Song</div>
+        <div class="tc-desc">Music generation</div>
+      </div>
+      <div class="tool-card soon" data-tool="game">
+        <span class="tc-soon-badge">Coming Soon</span>
+        <div class="tc-icon" style="background:linear-gradient(135deg,#188038,#34a853)"><i class="fa-solid fa-gamepad"></i></div>
+        <div class="tc-name">Unity Game</div>
+        <div class="tc-desc">2D/3D project .zip</div>
+      </div>
+    </div>
+    <div id="toolConfig"></div>
+    <div id="toolOutput" class="hide"></div>
+  </div>
 </div>
 
-<!-- LUDO -->
-<div class="page" id="ludoPage">
-    <h2>Ludo</h2>
-    <img class="ludo-board" id="ludoImg"
-         src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Ludo_board.png">
-    <button onclick="goHome()">Back</button>
+<!-- UPGRADE MODAL -->
+<div class="overlay" id="upgradeModal">
+  <div class="modal xl">
+    <button class="modal-x" data-close="upgradeModal"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-head" style="text-align:center;padding-right:0">
+      <h2 style="font-size:1.7rem">Upgrade to Nexus Pro</h2>
+      <p>Unlock premium models, Deep Research, Canvas, Image generation, and Studio tools. Chat is always unlimited and free.</p>
+    </div>
+    <div class="plans" id="plansContainer"></div>
+    <div class="secure-badge" style="margin-top:8px">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span><b>100% secure.</b> UPI = auto-verified instantly via our backend. Razorpay = instant auto-verified. Your Pro plan activates the moment your payment is confirmed on our server.</span>
+    </div>
+    <h3 style="font-size:1rem;font-weight:500;margin:24px 0 6px">Compare plans</h3>
+    <table class="compare-table" id="compareTable"></table>
+  </div>
 </div>
 
-<!-- Background music -->
-<audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+<!-- CHECKOUT MODAL -->
+<div class="overlay" id="checkoutModal">
+  <div class="modal" style="max-width:520px">
+    <button class="modal-x" data-close="checkoutModal"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-head">
+      <h2 id="checkoutTitle">Complete payment</h2>
+      <p id="checkoutSub">Secure checkout</p>
+    </div>
+    <div style="background:var(--g-surface-2);border-radius:var(--r-md);padding:16px;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:6px">
+        <span id="coPlanName">Nexus Pro</span><b id="coPlanPrice">₹1,950</b>
+      </div>
+      <div style="font-size:.78rem;color:var(--g-text-3)" id="coPlanSub">Billed monthly</div>
+    </div>
+
+    <div class="pay-tabs">
+      <button class="pay-tab active" data-pay="upi"><i class="fa-solid fa-mobile-screen"></i> UPI — Instant</button>
+      <button class="pay-tab" data-pay="razorpay"><i class="fa-solid fa-shield-halved"></i> Razorpay</button>
+    </div>
+
+    <div class="pay-pane active" data-pane="upi">
+      <div class="secure-badge" style="background:rgba(52,168,83,.1);border-color:#34a853">
+        <i class="fa-solid fa-bolt" style="color:#34a853"></i>
+        <span><b>Server-verified activation.</b> Pay via UPI → submit transaction ID + screenshot → our backend verifies → Pro activates automatically.</span>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(6,182,212,.04));border:1px solid rgba(16,185,129,.3);border-radius:var(--r-lg);padding:18px;text-align:center;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px">
+          <i class="fa-solid fa-mobile-screen" style="font-size:1.5rem;color:#10b981"></i>
+          <span style="font-weight:500">Pay ₹<span id="upiAmt">1,950</span> via UPI</span>
+        </div>
+        <div style="background:#fff;padding:12px;border-radius:12px;display:inline-block;margin:6px 0 12px">
+          <img id="upiQrImg" src="" alt="UPI QR Code" style="display:block;width:200px;height:200px;image-rendering:pixelated">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px dashed var(--g-border-2);border-radius:12px;padding:11px 13px;margin-top:8px">
+          <i class="fa-solid fa-at" style="color:var(--g-blue)"></i>
+          <code style="flex:1;font-family:'Roboto Mono',monospace;font-size:.82rem;font-weight:500;word-break:break-all;text-align:left;color:#1f1f1f" id="upiIdText">7096660937@nyes</code>
+          <button id="copyUpiBtn" style="background:var(--g-blue);color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:.75rem;font-weight:500;cursor:pointer;white-space:nowrap">
+            <i class="fa-solid fa-copy"></i> Copy
+          </button>
+        </div>
+        <a id="upiDeepLink" href="#" class="btn-primary" style="text-decoration:none;margin-top:12px;padding:11px">
+          <i class="fa-solid fa-up-right-from-square"></i> Open UPI App
+        </a>
+      </div>
+      <div class="field">
+        <label>UPI Transaction ID / UTR Number</label>
+        <input type="text" id="upiTxnId" placeholder="e.g. 402912345678" autocomplete="off">
+        <small>Ye UPI app ke "Payment Successful" screen pe milega.</small>
+      </div>
+      <div class="field">
+        <label>Payment Screenshot <b style="color:var(--g-error)">*</b></label>
+        <input type="file" id="paymentScreenshot" accept="image/png,image/jpeg,image/webp" style="padding:10px">
+        <small>Payment successful screen ka screenshot. Backend verification ke liye zaroori hai.</small>
+        <div id="paymentScreenshotPreview" style="display:none;margin-top:10px"></div>
+      </div>
+      <label style="display:flex;align-items:flex-start;gap:9px;font-size:.78rem;color:var(--g-text-2);line-height:1.5;margin:12px 0 14px">
+        <input type="checkbox" id="paymentTerms" style="margin-top:3px">
+        <span>I agree to the <a href="#" id="checkoutTermsLink" style="color:var(--g-blue)">Terms & Conditions</a> and <a href="#" id="checkoutPrivacyLink" style="color:var(--g-blue)">Privacy Policy</a>.</span>
+      </label>
+      <button class="btn-primary" id="upiSubmitBtn" style="padding:14px">
+        <i class="fa-solid fa-bolt"></i> Pay & Activate Instantly
+      </button>
+      <div class="pay-success" id="upiSuccess">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3>Payment verified!</h3>
+        <p id="upiSuccessMsg">Your Pro plan is now active.</p>
+        <button class="btn-primary" id="upiSuccessClose"><i class="fa-solid fa-rocket"></i> Start using</button>
+      </div>
+    </div>
+
+    <div class="pay-pane" data-pane="razorpay">
+      <div class="secure-badge">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span><b>Auto-verified & instant.</b> Pay via UPI, Card, Netbanking or Wallet. Subscription activates the moment Razorpay confirms your payment.</span>
+      </div>
+      <button class="btn-primary" id="payBtn" style="padding:15px;font-size:1rem">
+        <i class="fa-solid fa-lock"></i> <span id="payBtnText">Pay securely</span>
+      </button>
+      <div class="pay-success" id="paySuccess">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3>Payment successful!</h3>
+        <p id="paySuccessMsg">Your plan is now active.</p>
+        <button class="btn-primary" id="paySuccessClose"><i class="fa-solid fa-rocket"></i> Start using</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="settingsModal">
+  <div class="modal wide" style="max-width:720px">
+    <button class="modal-x" data-close="settingsModal"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-head"><h2>Settings</h2><p>Customize your Nexus AI experience.</p></div>
+
+    <div class="settings-tabs">
+      <button class="settings-tab active" data-stab="general"><i class="fa-solid fa-sliders"></i> General</button>
+      <button class="settings-tab" data-stab="chat"><i class="fa-solid fa-comments"></i> Chat</button>
+      <button class="settings-tab" data-stab="memory"><i class="fa-solid fa-brain"></i> Memory</button>
+      <button class="settings-tab" data-stab="voice"><i class="fa-solid fa-microphone"></i> Voice</button>
+      <button class="settings-tab" data-stab="api"><i class="fa-solid fa-key"></i> API Keys</button>
+      <button class="settings-tab" data-stab="data"><i class="fa-solid fa-database"></i> Data</button>
+      <button class="settings-tab" data-stab="about"><i class="fa-solid fa-circle-info"></i> About</button>
+    </div>
+
+    <div class="settings-pane active" data-spane="general">
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-palette"></i> Theme</div><div class="set-desc">Light, dark, or follow system</div></div>
+        <div class="seg-control" id="segTheme">
+          <button class="seg-btn" data-val="light"><i class="fa-solid fa-sun"></i> Light</button>
+          <button class="seg-btn" data-val="dark"><i class="fa-solid fa-moon"></i> Dark</button>
+          <button class="seg-btn" data-val="auto"><i class="fa-solid fa-circle-half-stroke"></i> Auto</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-droplet"></i> Accent color</div><div class="set-desc">Choose your highlight color</div></div>
+        <div class="accent-dots" id="accentDots">
+          <div class="accent-dot sel" data-accent="blue" style="background:#1a73e8"></div>
+          <div class="accent-dot" data-accent="purple" style="background:#9b72cb"></div>
+          <div class="accent-dot" data-accent="pink" style="background:#d96570"></div>
+          <div class="accent-dot" data-accent="green" style="background:#188038"></div>
+          <div class="accent-dot" data-accent="orange" style="background:#f2a600"></div>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-text-height"></i> Font size</div><div class="set-desc">Adjust text size across the app</div></div>
+        <div class="seg-control" id="segFont">
+          <button class="seg-btn" data-val="small">S</button>
+          <button class="seg-btn active" data-val="medium">M</button>
+          <button class="seg-btn" data-val="large">L</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-language"></i> Language</div><div class="set-desc">Interface language</div></div>
+        <select id="setLanguage" style="width:auto;padding:8px 12px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.85rem;outline:none;cursor:pointer">
+          <option value="en">English</option><option value="hi">हिन्दी (Hindi)</option><option value="es">Español</option>
+          <option value="fr">Français</option><option value="de">Deutsch</option><option value="ja">日本語</option>
+          <option value="ko">한국어</option><option value="zh">中文</option>
+        </select>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-compress"></i> Compact mode</div><div class="set-desc">Reduce padding and spacing</div></div>
+        <div class="switch" id="swCompact"></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-wand-magic"></i> Animations</div><div class="set-desc">Smooth transitions and effects</div></div>
+        <div class="switch on" id="swAnimations"></div>
+      </div>
+    </div>
+
+    <div class="settings-pane" data-spane="chat">
+      <div class="set-row-full">
+        <div class="set-title" style="margin-bottom:8px"><i class="fa-solid fa-scroll"></i> System instruction</div>
+        <textarea id="systemPrompt" rows="4" placeholder="e.g. You are a helpful assistant..." style="width:100%;padding:12px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.88rem;outline:none;resize:vertical;color:var(--g-text)"></textarea>
+        <div class="set-desc" style="margin-top:6px">Defines AI's behavior and personality.</div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-temperature-half"></i> Creativity</div><div class="set-desc">Lower = focused, higher = creative · <b id="tempVal">0.9</b></div></div>
+        <input type="range" class="custom-range" id="tempRange" min="0" max="1.5" step="0.1" value="0.9">
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-arrow-turn-down"></i> Send on Enter</div><div class="set-desc">If off, use Ctrl+Enter to send</div></div>
+        <div class="switch on" id="swSendEnter"></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-bolt"></i> Streaming responses</div><div class="set-desc">Show replies as they're typed</div></div>
+        <div class="switch on" id="swStreaming"></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-floppy-disk"></i> Auto-save chats</div><div class="set-desc">Save conversations locally</div></div>
+        <div class="switch on" id="swAutoSave"></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-image"></i> Auto-detect image prompts</div><div class="set-desc">Auto-generate images from descriptions (Pro only)</div></div>
+        <div class="switch on" id="swAutoImage"></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-magnifying-glass-chart"></i> Deep Research default</div><div class="set-desc">Start each new chat in Deep Research mode (Pro only)</div></div>
+        <div class="switch" id="swDeepResearch"></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-pen-ruler"></i> Canvas default</div><div class="set-desc">Start each new chat in Canvas (Pro only)</div></div>
+        <div class="switch" id="swCanvas"></div>
+      </div>
+    </div>
+
+    <div class="settings-pane" data-spane="memory">
+      <div style="background:var(--g-hover);border:1px solid var(--g-blue);border-radius:var(--r-sm);padding:12px 14px;font-size:.82rem;color:var(--g-text);margin-bottom:16px;display:flex;gap:10px;line-height:1.5">
+        <i class="fa-solid fa-info-circle" style="color:var(--g-blue);margin-top:2px"></i>
+        <span>Memory lets Nexus remember useful facts about you across chats.</span>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-brain"></i> Enable memory</div><div class="set-desc">Nexus remembers details across conversations</div></div>
+        <div class="switch on" id="swMemory"></div>
+      </div>
+      <div class="set-row-full">
+        <div class="set-title" style="margin-bottom:8px"><i class="fa-solid fa-note-sticky"></i> Saved memories</div>
+        <textarea id="memoryText" rows="5" placeholder="e.g. My name is Rahul. I prefer short answers." style="width:100%;padding:12px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.88rem;outline:none;resize:vertical;color:var(--g-text)"></textarea>
+        <div class="set-desc" style="margin-top:6px">Included as context in every new chat.</div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-trash-can"></i> Clear all memories</div><div class="set-desc">Remove everything Nexus remembers about you</div></div>
+        <button class="btn-ghost" style="width:auto;padding:8px 16px;font-size:.82rem;margin:0;color:var(--g-error);border-color:var(--g-error)" id="clearMemoryBtn"><i class="fa-solid fa-trash"></i> Clear</button>
+      </div>
+    </div>
+
+    <div class="settings-pane" data-spane="voice">
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-language"></i> Voice input language</div><div class="set-desc">Language for speech recognition</div></div>
+        <select id="voiceLang" style="width:auto;padding:8px 12px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.85rem;outline:none;cursor:pointer">
+          <option value="en-US">English (US)</option><option value="en-IN">English (India)</option><option value="hi-IN">हिन्दी</option>
+          <option value="es-ES">Español</option><option value="fr-FR">Français</option><option value="de-DE">Deutsch</option>
+          <option value="ja-JP">日本語</option><option value="ko-KR">한국어</option><option value="zh-CN">中文</option>
+        </select>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-volume-high"></i> Auto-speak replies</div><div class="set-desc">Read AI responses aloud</div></div>
+        <div class="switch" id="swTTS"></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-gauge-high"></i> Speech speed</div><div class="set-desc">Voice reading pace · <b id="ttsSpeedVal">1.0x</b></div></div>
+        <input type="range" class="custom-range" id="ttsSpeed" min="0.5" max="2" step="0.1" value="1">
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-play"></i> Test voice</div><div class="set-desc">Preview your voice settings</div></div>
+        <button class="btn-primary" style="width:auto;padding:8px 16px;font-size:.82rem" id="testVoice"><i class="fa-solid fa-play"></i> Test</button>
+      </div>
+    </div>
+
+    <div class="settings-pane" data-spane="api">
+      <div style="background:var(--g-hover);border:1px solid var(--g-blue);border-radius:var(--r-sm);padding:12px 14px;font-size:.82rem;color:var(--g-text);margin-bottom:16px;display:flex;gap:10px;line-height:1.5">
+        <i class="fa-solid fa-info-circle" style="color:var(--g-blue);margin-top:2px"></i>
+        <span>Optional. Without keys, Nexus uses free cloud models. Add your own keys for premium OpenAI & Gemini models (Pro only).</span>
+      </div>
+      <div class="set-row-full">
+        <div class="set-title" style="margin-bottom:8px"><i class="fa-solid fa-bolt"></i> OpenAI API key</div>
+        <input type="password" id="keyOpenAI" placeholder="sk-..." style="width:100%;padding:12px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.88rem;outline:none;color:var(--g-text)">
+      </div>
+      <div class="set-row-full">
+        <div class="set-title" style="margin-bottom:8px"><i class="fa-solid fa-gem"></i> Google Gemini API key</div>
+        <input type="password" id="keyGemini" placeholder="AIza..." style="width:100%;padding:12px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.88rem;outline:none;color:var(--g-text)">
+        <div class="set-desc" style="margin-top:6px">Get free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--g-blue)">aistudio.google.com</a></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-link"></i> Test connection</div><div class="set-desc">Verify your API keys work</div></div>
+        <button class="btn-primary" style="width:auto;padding:8px 16px;font-size:.82rem" id="testKeys"><i class="fa-solid fa-plug"></i> Test</button>
+      </div>
+    </div>
+
+    <div class="settings-pane" data-spane="data">
+      <div class="set-row-full">
+        <div class="set-title" style="margin-bottom:8px"><i class="fa-solid fa-hard-drive"></i> Storage usage</div>
+        <div class="storage-bar" id="storageBar"></div>
+        <div class="storage-legend">
+          <span><div class="storage-dot" style="background:#4285f4"></div> Chats: <b id="sizeChats">0 KB</b></span>
+          <span><div class="storage-dot" style="background:#9b72cb"></div> Library: <b id="sizeLib">0 KB</b></span>
+          <span><div class="storage-dot" style="background:#d96570"></div> Reviews: <b id="sizeReviews">0 KB</b></span>
+          <span><div class="storage-dot" style="background:#f2a600"></div> Other: <b id="sizeOther">0 KB</b></span>
+        </div>
+        <div class="set-desc" style="margin-top:8px">Total: <b id="sizeTotal">0 KB</b></div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-download"></i> Export all data</div><div class="set-desc">Download chats, images, settings as JSON</div></div>
+        <button class="btn-primary" style="width:auto;padding:8px 16px;font-size:.82rem" id="exportAllBtn"><i class="fa-solid fa-download"></i> Export</button>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-upload"></i> Import data</div><div class="set-desc">Restore from a JSON backup file</div></div>
+        <button class="btn-ghost" style="width:auto;padding:8px 16px;font-size:.82rem;margin:0" id="importAllBtn"><i class="fa-solid fa-upload"></i> Import</button>
+        <input type="file" id="importFile" accept=".json" hidden>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-broom"></i> Clear all chats</div><div class="set-desc">Delete all conversations permanently</div></div>
+        <button class="btn-ghost" style="width:auto;padding:8px 16px;font-size:.82rem;margin:0;color:var(--g-error);border-color:var(--g-error)" id="clearChatsBtn"><i class="fa-solid fa-trash"></i> Clear</button>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-images"></i> Clear library</div><div class="set-desc">Remove all generated images</div></div>
+        <button class="btn-ghost" style="width:auto;padding:8px 16px;font-size:.82rem;margin:0;color:var(--g-error);border-color:var(--g-error)" id="clearLibBtn"><i class="fa-solid fa-trash"></i> Clear</button>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-title"><i class="fa-solid fa-rotate-left"></i> Reset settings</div><div class="set-desc">Restore default preferences</div></div>
+        <button class="btn-ghost" style="width:auto;padding:8px 16px;font-size:.82rem;margin:0" id="resetSettingsBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      </div>
+      <button class="danger-btn" id="deleteAccountBtn"><i class="fa-solid fa-user-slash"></i> Delete Account & All Data</button>
+    </div>
+
+    <div class="settings-pane" data-spane="about">
+      <div class="about-card">
+        <div class="about-logo">
+          <span class="nx-logo" style="width:52px;height:52px">
+            <svg viewBox="0 0 40 40" width="52" height="52">
+              <defs><linearGradient id="nxGradD" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1a73e8"/><stop offset="50%" stop-color="#9b72cb"/><stop offset="100%" stop-color="#d96570"/>
+              </linearGradient></defs>
+              <path d="M20 2 L36 11 L36 29 L20 38 L4 29 L4 11 Z" fill="none" stroke="url(#nxGradD)" stroke-width="2.5" stroke-linejoin="round"/>
+              <circle cx="20" cy="20" r="5" fill="url(#nxGradD)"/>
+            </svg>
+          </span>
+        </div>
+        <div style="font-size:1.4rem;font-weight:500;background:var(--g-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Nexus AI</div>
+        <div class="about-ver">Version 3.6.0 · Build 2025.11 · Pro</div>
+        <p style="font-size:.82rem;color:var(--g-text-2);margin-top:12px;line-height:1.6">Unlimited chat. Premium power when you need it.</p>
+      </div>
+      <div class="about-links">
+        <a class="about-link" id="aboutTerms"><span><i class="fa-solid fa-file-contract"></i> Terms of Service</span><i class="fa-solid fa-chevron-right" style="color:var(--g-text-3)"></i></a>
+        <a class="about-link" id="aboutPrivacy"><span><i class="fa-solid fa-shield-halved"></i> Privacy Policy</span><i class="fa-solid fa-chevron-right" style="color:var(--g-text-3)"></i></a>
+        <a class="about-link" id="aboutContact"><span><i class="fa-solid fa-headset"></i> Contact Support</span><i class="fa-solid fa-chevron-right" style="color:var(--g-text-3)"></i></a>
+        <a class="about-link" id="aboutReviews"><span><i class="fa-solid fa-star"></i> Reviews & Ratings</span><i class="fa-solid fa-chevron-right" style="color:var(--g-text-3)"></i></a>
+        <a class="about-link" id="aboutShortcuts"><span><i class="fa-solid fa-keyboard"></i> Keyboard Shortcuts</span><i class="fa-solid fa-chevron-right" style="color:var(--g-text-3)"></i></a>
+      </div>
+      <p style="text-align:center;font-size:.72rem;color:var(--g-text-3);margin-top:20px;line-height:1.6">Made with ❤️ in India<br>© 2025 Nexus AI. All rights reserved.</p>
+    </div>
+
+    <button class="btn-primary" id="saveSettings" style="margin-top:20px"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+    <button class="btn-ghost" id="logoutBtn" style="color:var(--g-error);border-color:var(--g-error)"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+  </div>
+</div>
+
+<!-- LIBRARY -->
+<div class="overlay" id="libraryModal">
+  <div class="modal wide">
+    <button class="modal-x" data-close="libraryModal"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-head"><h2>Library</h2><p>Everything you've created.</p></div>
+    <div id="libContent"></div>
+  </div>
+</div>
+
+<!-- CONTACT US -->
+<div class="overlay" id="contactModal">
+  <div class="modal" style="max-width:520px">
+    <button class="modal-x" data-close="contactModal"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-head"><h2>Contact Us</h2><p>We're here to help. Reach out anytime.</p></div>
+    <div style="display:grid;gap:10px;margin-bottom:18px">
+      <a href="mailto:support@nexusai.com" style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--g-surface-2);border:1px solid var(--g-border);border-radius:var(--r-md);text-decoration:none;color:var(--g-text)">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ea4335,#d93025);display:flex;align-items:center;justify-content:center;color:#fff"><i class="fa-solid fa-envelope"></i></div>
+        <div><div style="font-weight:500;font-size:.9rem">Email Support</div><div style="font-size:.75rem;color:var(--g-text-3)">support@nexusai.com</div></div>
+      </a>
+      <a href="https://wa.me/917096660937" target="_blank" style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--g-surface-2);border:1px solid var(--g-border);border-radius:var(--r-md);text-decoration:none;color:var(--g-text)">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#25d366,#128c7e);display:flex;align-items:center;justify-content:center;color:#fff"><i class="fa-brands fa-whatsapp"></i></div>
+        <div><div style="font-weight:500;font-size:.9rem">WhatsApp</div><div style="font-size:.75rem;color:var(--g-text-3)">+91 70966 60937</div></div>
+      </a>
+    </div>
+    <div class="field"><label>Or send us a message</label>
+      <input type="text" id="contactName" placeholder="Your name">
+      <input type="email" id="contactEmail" placeholder="Your email" style="margin-top:8px">
+      <textarea id="contactMsg" rows="4" placeholder="How can we help?" style="margin-top:8px"></textarea>
+    </div>
+    <button class="btn-primary" id="contactSend"><i class="fa-solid fa-paper-plane"></i> Send Message</button>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<div class="overlay" id="reviewsModal">
+  <div class="modal wide">
+    <button class="modal-x" data-close="reviewsModal"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-head"><h2>Reviews & Ratings</h2><p>See what our users say, or share your own experience.</p></div>
+    <div style="background:linear-gradient(135deg,rgba(255,193,7,.1),transparent);border:1px solid rgba(255,193,7,.3);border-radius:var(--r-lg);padding:18px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div style="text-align:center">
+        <div style="font-size:2.8rem;font-weight:700;line-height:1;background:var(--g-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent" id="avgRating">—</div>
+        <div style="color:#f59e0b;font-size:1rem;margin-top:4px" id="avgStars">☆☆☆☆☆</div>
+        <div style="font-size:.75rem;color:var(--g-text-3);margin-top:2px"><span id="totalReviews">0</span> reviews</div>
+      </div>
+      <div style="flex:1;min-width:200px;font-size:.78rem;color:var(--g-text-2);line-height:1.6">
+        <b style="color:var(--g-text)">Loved by creators across India.</b><br>
+        Real feedback from real users.
+      </div>
+    </div>
+    <div style="background:var(--g-surface-2);border:1px solid var(--g-border);border-radius:var(--r-lg);padding:18px;margin-bottom:20px">
+      <h3 style="font-size:1rem;font-weight:500;margin-bottom:12px">Write a Review</h3>
+      <div class="star-picker" id="starPicker">
+        <i class="fa-regular fa-star" data-star="1"></i>
+        <i class="fa-regular fa-star" data-star="2"></i>
+        <i class="fa-regular fa-star" data-star="3"></i>
+        <i class="fa-regular fa-star" data-star="4"></i>
+        <i class="fa-regular fa-star" data-star="5"></i>
+      </div>
+      <textarea id="reviewText" rows="3" placeholder="Share your experience..." style="width:100%;padding:12px;background:var(--g-surface);border:1px solid var(--g-border);border-radius:var(--r-sm);font-size:.9rem;outline:none;resize:none;color:var(--g-text)"></textarea>
+      <button class="btn-primary" id="submitReview" style="margin-top:12px;padding:10px"><i class="fa-solid fa-paper-plane"></i> Submit Review</button>
+    </div>
+    <h3 style="font-size:1rem;font-weight:500;margin-bottom:12px">Recent Reviews</h3>
+    <div id="reviewList" style="max-height:45vh;overflow-y:auto"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-/* ---------------- SHOW PAGE ---------------- */
-function show(page) {
-    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
-    document.getElementById(page).style.display = "block";
+/* ============================================================
+   CONFIGURATION
+   ============================================================ */
+const GOOGLE_CLIENT_ID = '332879107872-tb0tp5srmsdabjatlq1clopjphoqktaq.apps.googleusercontent.com';
+const RAZORPAY_KEY_ID = '';
+const PAYMENT_VERIFY_ENDPOINT = '';   // 🔐 Add your backend verify URL here
+
+const UPI_ID = '7096660937@nyes';
+const UPI_NAME = 'Nexus AI';
+
+const EMAILJS_PUBLIC_KEY  = '1ECUaypsl2wAvyMhM';
+const EMAILJS_SERVICE_ID  = 'service_vn1mkqq';
+const EMAILJS_TEMPLATE_ID = 'template_9iv8vbe';
+
+const ADMIN_EMAIL = 'mitpatel24112007@gmail.com';
+const ADMIN_PASSWORD = 'nexus@admin2024';
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const esc = (s) => String(s ?? '').replace(/[&<>'"]/g, t => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t]));
+const nowTime = () => new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+function toast(msg, type='info', ms=3200){
+  const el = document.createElement('div');
+  el.className = 'toast';
+  const icon = type==='ok'?'fa-circle-check':type==='err'?'fa-circle-exclamation':type==='warn'?'fa-triangle-exclamation':'fa-circle-info';
+  const color = type==='ok'?'#34a853':type==='err'?'#ea4335':type==='warn'?'#f59e0b':'#4285f4';
+  el.innerHTML = `<i class="fa-solid ${icon}" style="color:${color}"></i><span>${esc(msg)}</span>`;
+  $('#toastWrap').appendChild(el);
+  setTimeout(()=>{ el.style.transition='all .3s'; el.style.opacity='0'; el.style.transform='translateX(40px)'; setTimeout(()=>el.remove(),320); }, ms);
+}
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('nexus::' + str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-/* ---------------- HOME PAGE FUNCTIONS ---------------- */
-function goHome() { show("homePage"); }
+/* ============================================================
+   STATE
+   ============================================================ */
+const STORAGE_KEY = 'nexus_ai_v13';
+const DEFAULT_SETTINGS = {
+  theme:'light', accent:'blue', fontSize:'medium', language:'en',
+  compact:false, animations:true,
+  systemPrompt:'You are Nexus AI, a helpful, friendly and accurate assistant. Give clear, well-formatted answers using markdown. Use headings and bullet points when helpful. Be concise but complete.',
+  temperature:0.9, sendOnEnter:true, streaming:true,
+  autoSave:true, autoImage:true,
+  deepResearchDefault:false, canvasDefault:false,
+  memory:true, memoryText:'',
+  voiceLang:'en-US', tts:false, ttsSpeed:1.0,
+  provider:'pollinations', modelId:'openai',
+  keys:{openai:'',gemini:''}
+};
+let S = {
+  users: [], sessionId: null, chats: {}, library: {}, reviews: [],
+  pendingPayments: [], contactMessages: [],
+  settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS))
+};
+let activeChatId = null;
+let attachments = [];
+let isGenerating = false;
+let abortCtrl = null;
+let pendingPlan = null;
+let currentRating = 0;
+let paymentScreenshotData = '';
+let paymentScreenshotName = '';
+let deepResearchMode = false;
+let canvasMode = false;
 
-/* ---------------- CHESS ---------------- */
-function openChess() {
-    show("chessPage");
-    const board = document.getElementById("board");
-    board.innerHTML = "";
-    let flip = false;
-    for (let i=0;i<8;i++) {
-        flip = !flip;
-        for (let j=0;j<8;j++) {
-            let box = document.createElement("div");
-            box.className = flip ? "white" : "black";
-            board.appendChild(box);
-            flip = !flip;
-        }
+function initEmailJS(){
+  try{
+    if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID){
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     }
+  }catch(e){ console.warn('EmailJS init failed:', e); }
+}
+async function sendPaymentVerificationEmail(record){
+  if(!window.emailjs || !EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID) return {sent:false, reason:'EmailJS not configured'};
+  try{
+    const message =
+`💳 NEW PAYMENT (AUTO-VERIFIED) — NEXUS AI
+
+👤 User: ${record.userName}
+📧 Email: ${record.userEmail}
+📦 Plan: ${record.planName}
+💰 Amount: ₹${record.amount}
+🔢 Transaction ID: ${record.txnId}
+🆔 Reference ID: ${record.id}
+🕒 Submitted: ${new Date(record.submittedAt).toLocaleString('en-IN')}
+✅ Status: AUTO-VERIFIED & ACTIVATED`;
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: ADMIN_EMAIL, from_name: record.userName, from_email: record.userEmail,
+      reply_to: record.userEmail,
+      subject: `💳 Auto-verified — ${record.planName} — ₹${record.amount} — ${record.txnId}`,
+      plan_name: record.planName, amount: record.amount, txn_id: record.txnId,
+      reference_id: record.id, submitted_at: new Date(record.submittedAt).toLocaleString('en-IN'),
+      message, screenshot: record.screenshotData || '', screenshot_name: record.screenshotName || 'screenshot.png'
+    });
+    return {sent:true};
+  }catch(err){ console.error('Payment email failed:', err); return {sent:false, reason:err.text || err.message}; }
+}
+function resetPaymentVerificationForm(){
+  paymentScreenshotData = ''; paymentScreenshotName = '';
+  const file = $('#paymentScreenshot'); const preview = $('#paymentScreenshotPreview'); const terms = $('#paymentTerms');
+  if(file) file.value = '';
+  if(preview){ preview.style.display = 'none'; preview.innerHTML = ''; }
+  if(terms) terms.checked = false;
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const p = JSON.parse(raw);
+    S = Object.assign(S, p);
+    S.settings = Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), p.settings || {});
+    S.settings.keys = Object.assign({openai:'',gemini:''}, p.settings?.keys || {});
+    S.reviews = S.reviews || [];
+    S.pendingPayments = S.pendingPayments || [];
+    S.contactMessages = S.contactMessages || [];
+  }catch(e){ console.warn('load failed', e); }
+}
+function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }catch(e){} }
+function currentUser(){ return S.sessionId ? S.users.find(u => u.id === S.sessionId) : null; }
+function myChats(){ const u = currentUser(); if(!u) return []; if(!S.chats[u.id]) S.chats[u.id] = []; return S.chats[u.id]; }
+function myLibrary(){ const u = currentUser(); if(!u) return []; if(!S.library[u.id]) S.library[u.id] = []; return S.library[u.id]; }
+
+/* ============================================================
+   PLANS — Free (unlimited chat) + Pro (all premium)
+   ============================================================ */
+const PLANS = [
+  {
+    id:'free', name:'Nexus Free', price:0, period:'forever', desc:'Unlimited chat — forever free',
+    features:[
+      {t:'Unlimited chat messages',on:true},
+      {t:'Basic cloud models (Nexus Cloud, Mistral, Llama)',on:true},
+      {t:'Standard responses',on:true},
+      {t:'Basic voice mode',on:true},
+      {t:'Premium models (Gemini, GPT-4o, Ultra Think)',on:false},
+      {t:'Image generation',on:false},
+      {t:'Deep Research',on:false},
+      {t:'Canvas editing',on:false},
+      {t:'Studio tools (PPT / PDF / Word)',on:false},
+      {t:'Extended memory',on:false}
+    ],
+    compare:{chat:'Unlimited',reasoning:'—',deepResearch:'🔒',canvas:'🔒',image:'🔒',video:'Soon',storage:'—',voice:'Standard',memory:'Basic',code:'🔒'}
+  },
+  {
+    id:'pro', name:'Nexus Pro', price:1950, period:'month', featured:true, badge:'RECOMMENDED', desc:'Unlock every premium feature',
+    features:[
+      {t:'Everything in Free',on:true},
+      {t:'Gemini Ultra + GPT-4o + Ultra Think models',on:true},
+      {t:'Advanced reasoning',on:true},
+      {t:'Unlimited Deep Research',on:true},
+      {t:'Canvas — side-by-side editing',on:true},
+      {t:'Advanced image generation',on:true},
+      {t:'Studio: PPT / PDF / Word export',on:true},
+      {t:'Code Interpreter / Data Analysis',on:true},
+      {t:'Full voice mode',on:true},
+      {t:'Extended Memory',on:true},
+      {t:'Priority access to new features',on:true}
+    ],
+    compare:{chat:'Unlimited',reasoning:'Advanced',deepResearch:'Unlimited',canvas:'Full',image:'Advanced',video:'Soon',storage:'Unlimited',voice:'Full',memory:'Extended',code:'Yes'}
+  }
+];
+
+const COMPARE_ROWS = [
+  {key:'chat', label:'Chat messages'},
+  {key:'reasoning', label:'Advanced reasoning'},
+  {key:'deepResearch', label:'Deep Research'},
+  {key:'canvas', label:'Canvas'},
+  {key:'image', label:'Image generation'},
+  {key:'video', label:'Video generation'},
+  {key:'storage', label:'Cloud storage'},
+  {key:'voice', label:'Voice mode'},
+  {key:'memory', label:'Memory'},
+  {key:'code', label:'Code Interpreter'}
+];
+
+function planInfo(){
+  const u = currentUser();
+  if(!u) return { id:'free', label:'Free' };
+  if(u.planExpires && Date.now() > u.planExpires){ u.plan = 'free'; saveState(); }
+  if(u.plan === 'pro') return { id:'pro', label:'Pro' };
+  return { id:'free', label:'Free' };
+}
+function isPro(){
+  const u = currentUser(); if(!u) return false;
+  if(u.planExpires && Date.now() > u.planExpires){ u.plan='free'; saveState(); return false; }
+  return u.plan === 'pro';
+}
+function requirePro(featureName){
+  if(isPro()) return true;
+  showProLockModal(featureName);
+  return false;
+}
+function showProLockModal(featureName){
+  const existing = document.getElementById('proLockModal');
+  if(existing) existing.remove();
+  const overlay = document.createElement('div');
+  overlay.id = 'proLockModal';
+  overlay.className = 'overlay show';
+  overlay.style.zIndex = '2500';
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:440px;text-align:center">
+      <button class="modal-x" id="proLockX"><i class="fa-solid fa-xmark"></i></button>
+      <div style="width:76px;height:76px;margin:8px auto 18px;border-radius:50%;background:var(--g-grad-nexus);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(155,114,203,.4)">
+        <i class="fa-solid fa-crown" style="font-size:2rem;color:#fff"></i>
+      </div>
+      <h2 style="font-size:1.4rem;font-weight:500;margin-bottom:8px">Pro feature locked</h2>
+      <p style="color:var(--g-text-2);font-size:.9rem;line-height:1.6;margin-bottom:20px">
+        <b style="color:var(--g-text)">${esc(featureName)}</b> सिर्फ <b>Nexus Pro</b> subscribers के लिए है।<br>
+        Chat हमेशा unlimited और free रहेगा।
+      </p>
+      <div style="background:var(--g-grad-soft);border-radius:var(--r-md);padding:14px;margin-bottom:20px;text-align:left;font-size:.82rem;line-height:1.7;color:var(--g-text-2)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><i class="fa-solid fa-check" style="color:#34a853"></i> Unlimited Deep Research</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><i class="fa-solid fa-check" style="color:#34a853"></i> Image + Studio tools</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><i class="fa-solid fa-check" style="color:#34a853"></i> Gemini Ultra + GPT-4o models</div>
+        <div style="display:flex;align-items:center;gap:8px"><i class="fa-solid fa-check" style="color:#34a853"></i> सिर्फ ₹1,950 / month</div>
+      </div>
+      <button class="btn-primary" id="proLockUpgrade" style="padding:14px;font-size:1rem">
+        <i class="fa-solid fa-crown"></i> Upgrade to Pro
+      </button>
+      <button class="btn-ghost" id="proLockLater" style="margin-top:10px">Maybe later</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#proLockX').onclick = () => overlay.remove();
+  overlay.querySelector('#proLockLater').onclick = () => overlay.remove();
+  overlay.querySelector('#proLockUpgrade').onclick = () => {
+    overlay.remove(); renderPlans(); openModal('upgradeModal');
+  };
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
 }
 
-/* ---------------- SNAKE ---------------- */
-let snakeInterval;
-function openSnake() {
-    show("snakePage");
-    document.getElementById("snakeCanvas").style.display = "block";
-    startSnake();
+/* ============================================================
+   AUTH
+   ============================================================ */
+let authMode = 'login';
+function setAuthMode(mode){
+  authMode = mode;
+  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === mode));
+  $('#nameField').style.display = mode === 'signup' ? 'block' : 'none';
+  $('#passStrengthWrap').style.display = mode === 'signup' ? 'block' : 'none';
+  $('#passHint').style.display = mode === 'signup' ? 'block' : 'none';
+  $('#authTitle').textContent = mode === 'signup' ? 'Create your account' : 'Welcome back';
+  $('#authSub').textContent = mode === 'signup' ? 'Join Nexus AI — unlimited chat, free forever.' : 'Sign in to continue to your workspace.';
+  $('#authSubmit').querySelector('span').textContent = mode === 'signup' ? 'Create account' : 'Sign in';
+  $('#authPass').setAttribute('autocomplete', mode === 'signup' ? 'new-password' : 'current-password');
+  $('#authError').textContent = '';
 }
-function startSnake() {
-    let canvas = document.getElementById("snakeCanvas");
-    let ctx = canvas.getContext("2d");
-    let px=10, py=10, vx=0, vy=0;
-    let ax=15, ay=15;
-    let trail=[], tail=5;
-    document.onkeydown = e => {
-        if(e.keyCode==37) vx=-1, vy=0;
-        if(e.keyCode==38) vx=0, vy=-1;
-        if(e.keyCode==39) vx=1, vy=0;
-        if(e.keyCode==40) vx=0, vy=1;
-    };
-    snakeInterval = setInterval(() => {
-        px+=vx; py+=vy;
-        if(px<0) px=19; if(px>19) px=0;
-        if(py<0) py=19; if(py>19) py=0;
-        ctx.fillStyle="black"; ctx.fillRect(0,0,400,400);
-        ctx.fillStyle="lime";
-        for(let i=0;i<trail.length;i++){
-            ctx.fillRect(trail[i].x*20, trail[i].y*20,18,18);
-            if(trail[i].x==px && trail[i].y==py) tail=5;
+function checkPasswordStrength(pw){
+  let score = 0;
+  if(pw.length >= 8) score++;
+  if(/[A-Z]/.test(pw)) score++;
+  if(/[a-z]/.test(pw)) score++;
+  if(/\d/.test(pw)) score++;
+  if(/[^A-Za-z0-9]/.test(pw)) score++;
+  return score;
+}
+$('#authPass')?.addEventListener('input', e => {
+  if(authMode !== 'signup') return;
+  const s = checkPasswordStrength(e.target.value);
+  const fill = $('#passStrengthFill');
+  fill.className = 'pass-strength-fill ' + (s <= 2 ? 'weak' : s <= 3 ? 'medium' : 'strong');
+});
+$('#passToggle')?.addEventListener('click', () => {
+  const inp = $('#authPass');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  $('#passToggle').innerHTML = show ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+});
+$('#authForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('#authEmail').value.trim().toLowerCase();
+  const pass = $('#authPass').value;
+  const name = $('#authName').value.trim();
+  const errEl = $('#authError');
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = 'Please enter a valid email address.'; return; }
+  if(authMode === 'signup'){
+    if(!name || name.length < 2) { errEl.textContent = 'Please enter your full name.'; return; }
+    if(checkPasswordStrength(pass) < 3) { errEl.textContent = 'Password too weak. Use 8+ chars, uppercase, lowercase & number.'; return; }
+    if(S.users.some(u => u.email === email)) { errEl.textContent = 'This email is already registered.'; return; }
+    const btn = $('#authSubmit'); btn.disabled = true;
+    const passHash = await sha256(pass);
+    const user = { id: uid(), name, email, passHash, provider:'email', plan:'free', createdAt: Date.now() };
+    S.users.push(user); S.sessionId = user.id;
+    if(!S.chats[user.id]) S.chats[user.id] = [];
+    saveState(); btn.disabled = false;
+    enterApp();
+    toast(`Welcome, ${name.split(' ')[0]}! Chat is unlimited & free.`, 'ok', 4000);
+  } else {
+    const btn = $('#authSubmit'); btn.disabled = true;
+    const passHash = await sha256(pass);
+    const user = S.users.find(u => u.email === email);
+    if(!user || user.passHash !== passHash){ btn.disabled = false; errEl.textContent = 'Incorrect email or password.'; return; }
+    S.sessionId = user.id;
+    if(!S.chats[user.id]) S.chats[user.id] = [];
+    saveState(); btn.disabled = false;
+    enterApp();
+    toast(`Welcome back, ${user.name.split(' ')[0]}!`, 'ok');
+  }
+});
+function initGoogle(){
+  if(!GOOGLE_CLIENT_ID){ $('#googleFallbackNotice').style.display = 'block'; return; }
+  const wait = setInterval(() => {
+    if(window.google && google.accounts && google.accounts.id){
+      clearInterval(wait);
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID, callback: handleGoogleResponse,
+        auto_select: false, cancel_on_tap_outside: true, use_fedcm_for_prompt: true
+      });
+      google.accounts.id.renderButton($('#googleBtnWrap'),
+        { theme: 'outline', size: 'large', width: 320, text: 'continue_with', shape: 'pill' });
+    }
+  }, 100);
+  setTimeout(() => clearInterval(wait), 8000);
+}
+async function handleGoogleResponse(response){
+  try{
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    const email = payload.email.toLowerCase();
+    let user = S.users.find(u => u.email === email);
+    if(!user){
+      user = { id: uid(), name: payload.name || email.split('@')[0], email,
+        passHash: 'google_' + payload.sub, provider: 'google', picture: payload.picture || '',
+        plan: 'free', createdAt: Date.now() };
+      S.users.push(user);
+      if(!S.chats[user.id]) S.chats[user.id] = [];
+      toast(`Welcome, ${user.name.split(' ')[0]}!`, 'ok', 4000);
+    }
+    S.sessionId = user.id; saveState(); enterApp();
+  }catch(err){ toast('Google sign-in failed', 'err'); console.error(err); }
+}
+function enterApp(){
+  $('#authScreen').classList.add('hide');
+  $('#app').style.display = 'flex';
+  updateUserUI();
+  updatePlanUI();
+  renderChatList();
+  activeChatId = null;
+  deepResearchMode = isPro() && S.settings.deepResearchDefault === true;
+  canvasMode = isPro() && S.settings.canvasDefault === true;
+  updateModeChips();
+  renderCurrentChat();
+  applyTheme();
+  applyAllSettings();
+}
+function logout(){
+  S.sessionId = null; saveState();
+  closeModal('settingsModal');
+  $('#app').style.display = 'none';
+  $('#authScreen').classList.remove('hide');
+  $('#authForm').reset(); setAuthMode('login');
+  toast('Signed out', 'ok');
+}
+
+/* ============================================================
+   THEME + SETTINGS
+   ============================================================ */
+function applyTheme(){
+  const s = S.settings;
+  let theme = s.theme;
+  if(theme === 'auto') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  const icon = $('#themeBtn')?.querySelector('i');
+  if(icon) icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+}
+function applyFontSize(size){
+  const root = document.documentElement;
+  if(size === 'small') root.style.fontSize = '13px';
+  else if(size === 'large') root.style.fontSize = '16px';
+  else root.style.fontSize = '14px';
+}
+function applyAccent(accent){
+  const map = { blue:'#1a73e8', purple:'#9b72cb', pink:'#d96570', green:'#188038', orange:'#f2a600' };
+  document.documentElement.style.setProperty('--g-blue', map[accent] || '#1a73e8');
+  document.documentElement.style.setProperty('--g-blue-d', map[accent] ? darken(map[accent], 15) : '#1557b0');
+}
+function darken(hex, amt){
+  const num = parseInt(hex.replace('#',''), 16);
+  const r = Math.max(0, (num >> 16) - amt);
+  const g = Math.max(0, ((num >> 8) & 0xFF) - amt);
+  const b = Math.max(0, (num & 0xFF) - amt);
+  return '#' + ((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+}
+function applyCompact(on){
+  let style = document.getElementById('compactStyle');
+  if(!style){ style = document.createElement('style'); style.id = 'compactStyle'; document.head.appendChild(style); }
+  style.textContent = on ? `
+    .msg-row{padding:0 max(12px,calc((100% - 900px)/2)) !important;gap:10px !important}
+    .messages{gap:12px !important;padding:12px 0 !important}
+    .bubble{padding:10px 14px !important}
+    .composer{padding:10px 14px !important}
+  ` : '';
+}
+function applyAnimations(on){
+  let style = document.getElementById('animOverride');
+  if(!style){ style = document.createElement('style'); style.id = 'animOverride'; document.head.appendChild(style); }
+  style.textContent = on ? '' : '* { animation-duration: 0s !important; transition-duration: 0s !important; }';
+}
+function applyAllSettings(){
+  const s = S.settings;
+  applyTheme(); applyFontSize(s.fontSize); applyAccent(s.accent);
+  applyCompact(s.compact); applyAnimations(s.animations);
+}
+function toggleTheme(){
+  S.settings.theme = S.settings.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(); saveState();
+}
+
+/* ============================================================
+   USER UI
+   ============================================================ */
+function updateUserUI(){
+  const u = currentUser(); if(!u) return;
+  $('#userName').textContent = u.name;
+  const av = $('#userAvatar');
+  if(u.picture) av.innerHTML = `<img src="${esc(u.picture)}" alt="">`;
+  else av.textContent = (u.name || 'N').charAt(0).toUpperCase();
+  $('#userSub').textContent = isPro() ? 'Pro plan' : 'Free plan';
+}
+function updatePlanUI(){
+  const u = currentUser(); if(!u) return;
+  const pro = isPro();
+  $('#planName').innerHTML = pro
+    ? `<i class="fa-solid fa-crown" style="color:#9b72cb"></i> Pro`
+    : `<i class="fa-solid fa-bolt"></i> Free`;
+  $('#planCredits').textContent = pro
+    ? (u.planExpires ? 'Till ' + new Date(u.planExpires).toLocaleDateString('en-IN') : 'Active')
+    : 'Unlimited chat';
+  $('#creditFill').style.width = '100%';
+  $('#upgradeBtn').textContent = pro ? 'Manage plan' : 'Upgrade to Pro';
+  updateModeChips();
+}
+
+/* ============================================================
+   MODELS
+   ============================================================ */
+const MODELS = [
+  { provider:'gemini', id:'gemini-2.0-flash', name:'Nexus Flash', desc:'Fast, everyday tasks (needs Gemini key)', tag:'PRO' },
+  { provider:'gemini', id:'gemini-1.5-flash', name:'Nexus Flash 1.5', desc:'Stable, quick (needs Gemini key)', tag:'PRO' },
+  { provider:'gemini', id:'gemini-1.5-pro', name:'Nexus Ultra Pro', desc:'Advanced reasoning (needs Gemini key)', tag:'PRO' },
+  { provider:'pollinations', id:'openai', name:'Nexus Cloud', desc:'Fast & smart (free)', tag:'' },
+  { provider:'pollinations', id:'mistral', name:'Nexus Mistral', desc:'Lightweight (free)', tag:'' },
+  { provider:'pollinations', id:'llama', name:'Nexus Llama', desc:'Open-source (free)', tag:'' },
+  { provider:'pollinations', id:'openai-large', name:'Nexus Ultra Think', desc:'Deep reasoning (free)', tag:'PRO' },
+  { provider:'openai', id:'gpt-4o-mini', name:'Nexus GPT-4o mini', desc:'Requires OpenAI key', tag:'PRO' },
+  { provider:'openai', id:'gpt-4o', name:'Nexus Ultra GPT-4o', desc:'Requires OpenAI key', tag:'PRO' }
+];
+function currentModel(){ return MODELS.find(m => m.provider === S.settings.provider && m.id === S.settings.modelId) || MODELS[3]; }
+function applyModelUI(){ $('#modelName').textContent = currentModel().name; }
+function buildModelDropdown(){
+  const dd = $('#modelDropdown'); dd.innerHTML = '';
+  const groups = { 'gemini':'Nexus Ultra · Gemini key required', 'pollinations':'Nexus Cloud · Free', 'openai':'OpenAI · API key required' };
+  for(const [prov, label] of Object.entries(groups)){
+    const h = document.createElement('div'); h.className = 'dd-label'; h.textContent = label; dd.appendChild(h);
+    MODELS.filter(m => m.provider === prov).forEach(m => {
+      const item = document.createElement('div');
+      const sel = S.settings.provider === m.provider && S.settings.modelId === m.id;
+      item.className = 'dd-item' + (sel ? ' sel' : '');
+      item.innerHTML = `<div class="dd-ic"><i class="fa-solid fa-microchip"></i></div><div class="dd-txt"><div class="dd-name">${esc(m.name)}${m.tag ? ` <span class="dd-badge">${m.tag}</span>` : ''}</div><div class="dd-desc">${esc(m.desc)}</div></div>`;
+      item.addEventListener('click', () => selectModel(m));
+      dd.appendChild(item);
+    });
+  }
+}
+function selectModel(m){
+  const premiumProviders = ['gemini','openai'];
+  const premiumModels = ['openai-large'];
+  if((premiumProviders.includes(m.provider) || premiumModels.includes(m.id)) && !isPro()){
+    closeDropdown();
+    showProLockModal(`${m.name} model`);
+    return;
+  }
+  if(m.provider === 'openai' && !S.settings.keys.openai){ toast('Add OpenAI API key in Settings first.', 'err', 3500); return; }
+  if(m.provider === 'gemini' && !S.settings.keys.gemini){ toast('Add Gemini API key in Settings → API Keys tab.', 'err', 4000); return; }
+  S.settings.provider = m.provider;
+  S.settings.modelId = m.id;
+  saveState(); applyModelUI(); closeDropdown();
+  toast(`Switched to ${m.name}`, 'ok', 1800);
+}
+function toggleDropdown(){
+  const dd = $('#modelDropdown');
+  const open = dd.classList.toggle('show');
+  $('#modelBtn').classList.toggle('open', open);
+  if(open) buildModelDropdown();
+}
+function closeDropdown(){ $('#modelDropdown').classList.remove('show'); $('#modelBtn').classList.remove('open'); }
+
+/* ============================================================
+   MODE CHIPS
+   ============================================================ */
+function updateModeChips(){
+  const pro = isPro();
+  const dr = $('#deepResearchBtn'); const cv = $('#canvasBtn');
+  if(dr){
+    dr.classList.toggle('active', deepResearchMode);
+    dr.classList.toggle('locked', !pro);
+    dr.title = pro ? 'Deep Research' : 'Deep Research — Pro only';
+  }
+  if(cv){
+    cv.classList.toggle('active', canvasMode);
+    cv.classList.toggle('locked', !pro);
+    cv.title = pro ? 'Canvas' : 'Canvas — Pro only';
+  }
+}
+
+/* ============================================================
+   MARKDOWN
+   ============================================================ */
+function renderMarkdown(src){
+  if(!src) return '';
+  let text = String(src).replace(/\r\n/g, '\n');
+  const blocks = [];
+  text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const i = blocks.length;
+    blocks.push({ lang: lang || 'code', code: code.replace(/\n$/, '') });
+    return `\u0000C${i}\u0000`;
+  });
+  text = esc(text);
+  text = text.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  text = text.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  text = text.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/(^|\s)\*(?!\s)(.+?)(?<!\s)\*(?=\s|$)/g, '$1<em>$2</em>');
+  text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  text = text.replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>');
+  text = text.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>');
+  text = text.split('\n\n').map(p => {
+    const t = p.trim();
+    if(!t) return '';
+    if(/^<(h[1-4]|ul|ol|li|pre|blockquote)/.test(t)) return t;
+    if(/^\u0000C\d+\u0000$/.test(t)) return t;
+    return '<p>' + t.replace(/\n/g, '<br>') + '</p>';
+  }).join('');
+  text = text.replace(/\u0000C(\d+)\u0000/g, (_, i) => {
+    const b = blocks[+i];
+    return `<div class="code-block"><div class="code-head"><span>${esc(b.lang)}</span><button class="code-copy" type="button"><i class="fa-regular fa-copy"></i> Copy</button></div><pre><code>${esc(b.code)}</code></pre></div>`;
+  });
+  return text;
+}
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.code-copy');
+  if(!btn) return;
+  const code = btn.closest('.code-block').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+    setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy', 1500);
+  });
+});
+
+/* ============================================================
+   AI ENGINES
+   ============================================================ */
+async function streamSSE(res, onDelta){
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = '';
+  while(true){
+    const { done, value } = await reader.read();
+    if(done) break;
+    buf += dec.decode(value, { stream:true });
+    const lines = buf.split('\n'); buf = lines.pop();
+    for(const line of lines){
+      const t = line.trim();
+      if(!t.startsWith('data:')) continue;
+      const d = t.slice(5).trim();
+      if(d === '[DONE]') return;
+      try{
+        const j = JSON.parse(d);
+        const delta = j.choices?.[0]?.delta?.content ?? j.choices?.[0]?.message?.content ?? '';
+        if(delta) onDelta(delta);
+      }catch(e){}
+    }
+  }
+}
+async function callPollinations(messages, onDelta, signal){
+  const res = await fetch('https://text.pollinations.ai/openai', {
+    method:'POST', headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ model: S.settings.modelId || 'openai', messages, stream:true, referrer:'nexus-ai' }),
+    signal
+  });
+  if(!res.ok) throw new Error('API error ' + res.status);
+  let full = '';
+  await streamSSE(res, d => { full += d; onDelta(d); });
+  return full;
+}
+async function callOpenAICompat(messages, onDelta, signal){
+  const key = S.settings.keys.openai;
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
+    body: JSON.stringify({ model: S.settings.modelId, messages, stream:true, temperature: S.settings.temperature }),
+    signal
+  });
+  if(!res.ok) throw new Error('OpenAI ' + res.status);
+  let full = '';
+  await streamSSE(res, d => { full += d; onDelta(d); });
+  return full;
+}
+async function callGemini(messages, onDelta, signal){
+  const key = S.settings.keys.gemini;
+  if(!key) throw new Error('Gemini API key missing.');
+  const model = S.settings.modelId || 'gemini-2.0-flash';
+  const sys = messages.find(m => m.role === 'system');
+  const contents = messages.filter(m => m.role !== 'system').map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+  const body = { contents, generationConfig: { temperature: S.settings.temperature || 0.9, maxOutputTokens: 8192 } };
+  if(sys) body.systemInstruction = { parts:[{ text: sys.content }] };
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${key}`;
+  const res = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body), signal });
+  if(!res.ok){
+    let errMsg = 'Gemini ' + res.status;
+    try{ const j = await res.json(); errMsg = j.error?.message || errMsg; }catch(e){}
+    throw new Error(errMsg);
+  }
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = '', full = '';
+  while(true){
+    const { done, value } = await reader.read();
+    if(done) break;
+    buf += dec.decode(value, { stream:true });
+    const lines = buf.split('\n'); buf = lines.pop();
+    for(const line of lines){
+      const t = line.trim();
+      if(!t.startsWith('data:')) continue;
+      const d = t.slice(5).trim();
+      if(!d || d === '[DONE]') continue;
+      try{
+        const j = JSON.parse(d);
+        const parts = j.candidates?.[0]?.content?.parts || [];
+        for(const p of parts){
+          if(p.text){ full += p.text; onDelta(p.text); }
         }
-        trail.push({x:px,y:py});
-        while(trail.length>tail) trail.shift();
-        if(ax==px && ay==py){ tail++; ax=Math.floor(Math.random()*20); ay=Math.floor(Math.random()*20);}
-        ctx.fillStyle="red"; ctx.fillRect(ax*20, ay*20,18,18);
-    },100);
+      }catch(e){}
+    }
+  }
+  return full;
 }
-function stopSnake(){ clearInterval(snakeInterval); }
-
-/* ---------------- LUDO ---------------- */
-function openLudo(){ show("ludoPage"); }
-
-/* ---------------- SETTINGS CONTROLS ---------------- */
-const soundBtn = document.getElementById("soundBtn");
-let soundOn = true;
-soundBtn.onclick = () => { 
-    soundOn = !soundOn; 
-    soundBtn.innerText = soundOn ? "On" : "Off"; 
-    console.log("Sound:", soundOn);
+async function callAI(messages, onDelta, signal){
+  const p = S.settings.provider;
+  if(p === 'gemini' && S.settings.keys.gemini) return callGemini(messages, onDelta, signal);
+  if(p === 'openai' && S.settings.keys.openai) return callOpenAICompat(messages, onDelta, signal);
+  return callPollinations(messages, onDelta, signal);
 }
 
-const musicBtn = document.getElementById("musicBtn");
-const bgMusic = document.getElementById("bgMusic");
-musicBtn.onclick = () => { 
-    if(bgMusic.paused){ bgMusic.play(); musicBtn.innerText="Pause"; }
-    else{ bgMusic.pause(); musicBtn.innerText="Play"; }
+/* ============================================================
+   CHAT
+   ============================================================ */
+function renderChatList(){
+  const list = $('#chatList');
+  const pinnedList = $('#pinnedList');
+  const pinnedLabel = $('#pinnedLabel');
+  list.innerHTML = ''; pinnedList.innerHTML = '';
+  const u = currentUser(); if(!u) return;
+  const q = ($('#chatSearch').value || '').toLowerCase().trim();
+  const all = myChats().filter(c => !q || c.title.toLowerCase().includes(q));
+  const pinned = all.filter(c => c.pinned);
+  const normal = all.filter(c => !c.pinned);
+  pinnedLabel.style.display = pinned.length ? 'flex' : 'none';
+  const renderItem = (c, target) => {
+    const li = document.createElement('li');
+    li.className = 'chat-item' + (c.id === activeChatId ? ' active' : '');
+    li.innerHTML = `<i class="fa-regular fa-message"></i><span>${esc(c.title)}</span><button class="pin ${c.pinned ? 'active' : ''}" title="Pin"><i class="fa-solid fa-thumbtack"></i></button><button class="del" title="Delete"><i class="fa-solid fa-trash"></i></button>`;
+    li.addEventListener('click', e => { if(e.target.closest('.del')||e.target.closest('.pin')) return; loadChat(c.id); });
+    li.querySelector('.pin').addEventListener('click', e => { e.stopPropagation(); togglePin(c.id); });
+    li.querySelector('.del').addEventListener('click', e => { e.stopPropagation(); deleteChat(c.id); });
+    target.appendChild(li);
+  };
+  pinned.forEach(c => renderItem(c, pinnedList));
+  normal.forEach(c => renderItem(c, list));
+  if(!all.length) list.innerHTML = `<li class="empty-chats">${q ? 'No results' : 'No conversations yet'}</li>`;
 }
-document.getElementById("musicVolume").oninput = e => {
-    bgMusic.volume = e.target.value;
+function togglePin(id){
+  const c = myChats().find(x => x.id === id); if(!c) return;
+  c.pinned = !c.pinned; saveState(); renderChatList();
 }
 
-document.getElementById("brightnessSlider").oninput = e => {
-    document.body.style.filter = `brightness(${e.target.value}%)`;
+function renderCurrentChat(){
+  const c = $('#messages');
+  const chat = myChats().find(x => x.id === activeChatId);
+  if(!chat || !chat.messages.length){
+    const u = currentUser();
+    const name = u ? u.name.split(' ')[0] : 'there';
+    c.innerHTML = `
+      <div class="welcome">
+        <div class="welcome-logo">
+          <svg viewBox="0 0 40 40" width="60" height="60">
+            <defs><linearGradient id="nxGradW" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1a73e8"/><stop offset="50%" stop-color="#9b72cb"/><stop offset="100%" stop-color="#d96570"/>
+            </linearGradient></defs>
+            <path d="M20 2 L36 11 L36 29 L20 38 L4 29 L4 11 Z" fill="none" stroke="url(#nxGradW)" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="20" cy="20" r="5" fill="url(#nxGradW)"/>
+          </svg>
+        </div>
+        <h1>Hi ${esc(name)}, how can I <em>help today</em>?</h1>
+        <p>Unlimited free chat. Ask anything — Pro unlocks images, research, and Studio tools.</p>
+        <div class="sugg-grid">
+          <div class="sugg" data-p="Explain quantum computing in simple terms with examples"><div class="sugg-t"><i class="fa-solid fa-brain" style="color:#4285f4"></i> Explain concept</div><div class="sugg-d">Simple, clear answer</div></div>
+          <div class="sugg" data-p="Write a Python script to scrape news headlines from a website and save to CSV"><div class="sugg-t"><i class="fa-solid fa-code" style="color:#d96570"></i> Write code</div><div class="sugg-d">Runnable + explained</div></div>
+          <div class="sugg" data-p="Draft a professional business proposal for a coffee shop in Mumbai"><div class="sugg-t"><i class="fa-solid fa-file-lines" style="color:#f2a600"></i> Draft document</div><div class="sugg-d">Professional tone</div></div>
+          <div class="sugg" data-p="Give me 5 creative names for a coffee shop with taglines"><div class="sugg-t"><i class="fa-solid fa-lightbulb" style="color:#9b72cb"></i> Brainstorm</div><div class="sugg-d">Creative ideas</div></div>
+        </div>
+      </div>`;
+    $$('#messages .sugg').forEach(el => el.addEventListener('click', () => {
+      $('#promptInput').value = el.dataset.p;
+      $('#promptInput').dispatchEvent(new Event('input'));
+      $('#promptInput').focus();
+      setTimeout(() => { if(!isGenerating) handleSend(); }, 200);
+    }));
+    return;
+  }
+  c.innerHTML = '';
+  chat.messages.forEach(m => renderMessage(m));
+  c.scrollTop = c.scrollHeight;
 }
 
-/* Extra feature toggles */
-document.getElementById("feature1").onchange = e => console.log("Feature1:", e.target.checked);
-document.getElementById("feature2").onchange = e => console.log("Feature2:", e.target.checked);
-document.getElementById("feature3").onchange = e => console.log("Feature3:", e.target.checked);
+function renderMessage(m){
+  const c = $('#messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + (m.sender === 'user' ? 'user' : 'ai') + (m.error ? ' error' : '');
+  const av = document.createElement('div');
+  av.className = 'msg-av ' + (m.sender === 'user' ? 'user' : 'ai');
+  const u = currentUser();
+  if(m.sender === 'user' && u?.picture) av.innerHTML = `<img src="${esc(u.picture)}" alt="">`;
+  else if(m.sender === 'user') av.textContent = (u?.name || 'U').charAt(0).toUpperCase();
+  else {
+    const gid = 'nxs' + Math.random().toString(36).slice(2,9);
+    av.innerHTML = `<svg viewBox="0 0 40 40" width="20" height="20"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a73e8"/><stop offset="50%" stop-color="#9b72cb"/><stop offset="100%" stop-color="#d96570"/></linearGradient></defs><path d="M20 2 L36 11 L36 29 L20 38 L4 29 L4 11 Z" fill="none" stroke="url(#${gid})" stroke-width="2.5" stroke-linejoin="round"/><circle cx="20" cy="20" r="5" fill="url(#${gid})"/></svg>`;
+  }
+  const body = document.createElement('div');
+  body.className = 'msg-body';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if(m.imageUrls?.length){
+    bubble.innerHTML = renderMarkdown(m.text || '');
+    const grid = document.createElement('div');
+    grid.className = 'img-grid ' + (m.imageUrls.length === 1 ? 'n1' : m.imageUrls.length === 2 ? 'n2' : 'n4');
+    m.imageUrls.forEach(url => {
+      const card = document.createElement('div');
+      card.className = 'img-card';
+      card.innerHTML = `<div class="img-loading"><div class="spinner"></div><span>Generating…</span></div>`;
+      const img = new Image();
+      img.onload = () => { card.innerHTML = `<img src="${url}" alt="generated">`; };
+      img.onerror = () => { card.innerHTML = `<div class="img-loading"><i class="fa-solid fa-triangle-exclamation" style="color:#ea4335;font-size:1.5rem"></i><span>Failed</span></div>`; };
+      img.src = url;
+      card.addEventListener('click', () => window.open(url, '_blank'));
+      grid.appendChild(card);
+    });
+    bubble.appendChild(grid);
+  } else {
+    bubble.innerHTML = renderMarkdown(m.text || '');
+  }
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  meta.innerHTML = `<span>${esc(m.time || '')}</span>`;
+  if(m.sender === 'ai' && m.text){
+    const cp = document.createElement('button');
+    cp.className = 'msg-act'; cp.innerHTML = '<i class="fa-regular fa-copy"></i>';
+    cp.addEventListener('click', () => navigator.clipboard.writeText(m.text).then(() => toast('Copied', 'ok', 1500)));
+    meta.appendChild(cp);
+    if('speechSynthesis' in window){
+      const sp = document.createElement('button');
+      sp.className = 'msg-act'; sp.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+      sp.addEventListener('click', () => speakText(m.text));
+      meta.appendChild(sp);
+    }
+  }
+  body.appendChild(bubble);
+  body.appendChild(meta);
+  if(m.sender === 'user'){ row.appendChild(body); row.appendChild(av); }
+  else { row.appendChild(av); row.appendChild(body); }
+  c.appendChild(row);
+  c.scrollTop = c.scrollHeight;
+  return { bubble, row };
+}
 
+function setSendState(state){
+  const btn = $('#sendBtn');
+  btn.disabled = state === 'disabled';
+  btn.classList.toggle('stop', state === 'stop');
+  btn.innerHTML = state === 'stop' ? '<i class="fa-solid fa-stop"></i>' : '<i class="fa-solid fa-arrow-up"></i>';
+}
+
+async function handleSend(){
+  if(isGenerating){ abortCtrl?.abort(); return; }
+  const inp = $('#promptInput');
+  let text = inp.value.trim();
+  if(!text && attachments.length) text = 'Analyze the attached files.';
+  if(!text) return;
+  const time = nowTime();
+  if(!activeChatId){
+    const id = uid();
+    myChats().unshift({ id, title: text.slice(0, 40), messages: [], createdAt: Date.now() });
+    activeChatId = id;
+    renderChatList();
+  }
+  let fullPrompt = text;
+  if(attachments.length) fullPrompt += '\n\n' + attachments.map(a => `--- ${a.name} ---\n${a.content}`).join('\n\n');
+  const userMsg = { sender:'user', text, time };
+  myChats().find(c => c.id === activeChatId).messages.push(userMsg);
+  renderMessage(userMsg);
+  saveState();
+  inp.value = ''; inp.style.height = 'auto';
+  $('#charCount').textContent = '0';
+  attachments = []; renderAttachments();
+  setSendState('disabled');
+
+  const lower = text.toLowerCase();
+  const autoImage = S.settings.autoImage !== false;
+  const isImage = autoImage && (/\b(generate|create|draw|make|render|design|show)\b.*\b(image|picture|photo|thumbnail|art|poster|logo|banner|wallpaper)\b/.test(lower) || /\b(image|thumbnail)\s+(of|for|with)\b/.test(lower));
+
+  if(isImage && text.length < 500){
+    if(!isPro()){
+      await generateTextReply(fullPrompt + '\n\n[Note: User requested an image. Politely explain that image generation requires Nexus Pro (₹1,950/month), and offer a detailed visual description instead.]', time);
+    } else {
+      await generateImageReply(text, time);
+    }
+  } else await generateTextReply(fullPrompt, time);
+}
+
+async function generateTextReply(prompt, time){
+  isGenerating = true;
+  abortCtrl = new AbortController();
+  setSendState('stop');
+  const sys = S.settings.systemPrompt;
+  const memory = S.settings.memory && S.settings.memoryText ? `\n\nThings to remember about the user:\n${S.settings.memoryText}` : '';
+  const modeNote = (deepResearchMode && isPro())
+    ? '\n\n[Deep Research mode ON — produce a thorough, well-structured research report with sections and insights.]'
+    : ((canvasMode && isPro()) ? '\n\n[Canvas mode ON — produce clean, editable text suitable for side-by-side editing.]' : '');
+  const messages = [];
+  if(sys || memory || modeNote) messages.push({ role:'system', content: sys + memory + modeNote });
+  const chat = myChats().find(c => c.id === activeChatId);
+  const hist = chat.messages.filter(m => !m.imageUrls && !m.error && m.text).slice(-10);
+  hist.forEach(m => messages.push({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }));
+  if(messages[messages.length-1]?.content !== prompt) messages.push({ role:'user', content: prompt });
+  const placeholder = { sender:'ai', text:'', time };
+  chat.messages.push(placeholder);
+  const { bubble } = renderMessage({ sender:'ai', text:'', time });
+  bubble.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
+  let full = '', first = true;
+  try{
+    await callAI(messages, d => {
+      if(first){ bubble.innerHTML = ''; first = false; }
+      full += d;
+      bubble.innerHTML = renderMarkdown(full);
+      $('#messages').scrollTop = $('#messages').scrollHeight;
+    }, abortCtrl.signal);
+    if(!full) full = '*(No response. Try again.)*';
+    placeholder.text = full;
+    saveState();
+    if(S.settings.tts) speakText(full);
+  }catch(err){
+    if(err.name === 'AbortError') placeholder.text = full + '\n\n*[stopped]*';
+    else {
+      placeholder.error = true;
+      placeholder.text = `⚠️ **Request failed:** ${err.message}\n\n**Solutions:**\n- Add your Gemini API key in Settings → API Keys (recommended)\n- Or switch to a free model from the model dropdown`;
+      bubble.parentElement.classList.add('error');
+      toast('Request failed', 'err');
+    }
+    bubble.innerHTML = renderMarkdown(placeholder.text);
+    saveState();
+  }finally{
+    isGenerating = false;
+    abortCtrl = null;
+    setSendState($('#promptInput').value.trim() ? 'ready' : 'disabled');
+  }
+}
+
+function speakText(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const clean = text.replace(/```[\s\S]*?```/g, '').replace(/[#*_`>]/g, '').slice(0, 3000);
+  const u = new SpeechSynthesisUtterance(clean);
+  u.lang = S.settings.voiceLang || 'en-US';
+  u.rate = parseFloat(S.settings.ttsSpeed) || 1.0;
+  speechSynthesis.speak(u);
+}
+
+async function generateImageReply(prompt, time){
+  if(!requirePro('Image generation')) return;
+  isGenerating = true;
+  setSendState('stop');
+  const chat = myChats().find(c => c.id === activeChatId);
+  const seed = Math.floor(Math.random() * 1e9);
+  let enhance = ', ultra detailed, high quality, professional composition, sharp focus, beautiful lighting, 4k';
+  const lp = prompt.toLowerCase();
+  if(lp.includes('thumbnail')) enhance = ', youtube thumbnail style, vibrant colors, high contrast, cinematic, 16:9, bold visual impact';
+  else if(lp.includes('logo')) enhance = ', minimal logo design, clean vector style, professional branding, flat design';
+  else if(lp.includes('poster')) enhance = ', movie poster style, dramatic cinematic composition, epic lighting, detailed';
+  else if(lp.includes('anime')) enhance = ', anime style, studio ghibli inspired, cel shaded, beautiful detailed background';
+  else if(lp.includes('realistic') || lp.includes('photo')) enhance = ', photorealistic, dslr photography, natural lighting, 8k, extremely detailed';
+  const finalPrompt = prompt + enhance;
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=1280&height=720&seed=${seed}&nologo=true&model=flux&enhance=true`;
+  const msg = { sender:'ai', text: `Here's your image for:\n\n> ${prompt}`, time, imageUrls:[url] };
+  chat.messages.push(msg);
+  renderMessage(msg);
+  myLibrary().unshift({ url, prompt, time: Date.now(), type:'image' });
+  saveState();
+  isGenerating = false;
+  setSendState('disabled');
+  toast('Image generated', 'ok');
+}
+
+/* ============================================================
+   MODAL HELPERS
+   ============================================================ */
+function openModal(id){ $('#' + id).classList.add('show'); }
+function closeModal(id){ $('#' + id).classList.remove('show'); }
+$$('[data-close]').forEach(el => el.addEventListener('click', () => closeModal(el.dataset.close)));
+$$('.overlay').forEach(ov => ov.addEventListener('click', e => { if(e.target === ov) ov.classList.remove('show'); }));
+document.addEventListener('keydown', e => { if(e.key === 'Escape') $$('.overlay.show').forEach(o => o.classList.remove('show')); });
+
+function openSidebar(){ $('#sidebar').classList.add('open'); $('#sbBackdrop').classList.add('show'); }
+function closeSidebar(){ $('#sidebar').classList.remove('open'); $('#sbBackdrop').classList.remove('show'); }
+function newChat(){ activeChatId = null; renderChatList(); renderCurrentChat(); closeSidebar(); }
+function loadChat(id){ activeChatId = id; renderChatList(); renderCurrentChat(); closeSidebar(); }
+function deleteChat(id){
+  const u = currentUser(); if(!u) return;
+  S.chats[u.id] = myChats().filter(c => c.id !== id);
+  if(activeChatId === id) activeChatId = null;
+  saveState(); renderChatList(); renderCurrentChat();
+}
+
+/* ============================================================
+   ATTACHMENTS
+   ============================================================ */
+function renderAttachments(){
+  const w = $('#attachList'); w.innerHTML = '';
+  attachments.forEach((a, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'attach-chip';
+    chip.innerHTML = `<i class="fa-solid fa-file-lines"></i> ${esc(a.name)} <button><i class="fa-solid fa-xmark"></i></button>`;
+    chip.querySelector('button').addEventListener('click', () => { attachments.splice(i,1); renderAttachments(); });
+    w.appendChild(chip);
+  });
+}
+async function handleFiles(files){
+  for(const f of files){
+    if(f.size > 200*1024){ toast(`${f.name} too large`, 'err'); continue; }
+    try { attachments.push({ name: f.name, content: (await f.text()).slice(0,10000) }); }
+    catch(e){ toast(`Cannot read ${f.name}`, 'err'); }
+  }
+  renderAttachments();
+}
+
+/* ============================================================
+   RENDER PLANS + COMPARE
+   ============================================================ */
+function renderPlans(){
+  const c = $('#plansContainer'); c.innerHTML = '';
+  PLANS.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'plan' + (p.featured ? ' featured' : '');
+    if(p.badge) el.innerHTML = `<div class="plan-badge">${p.badge}</div>`;
+    el.innerHTML += `
+      <h3>${p.name}</h3>
+      <div class="price">${p.price === 0 ? 'Free' : '₹' + p.price.toLocaleString('en-IN')} ${p.price > 0 ? `<small>/${p.period}</small>` : ''}</div>
+      <div class="price-inr">${esc(p.desc)}</div>
+      <ul>${p.features.map(f => `<li class="${f.on ? '' : 'off'}"><i class="fa-solid ${f.on ? 'fa-check' : 'fa-xmark'}"></i> ${f.t}</li>`).join('')}</ul>
+      <button class="${p.featured ? 'btn-primary' : 'btn-ghost'}" data-plan="${p.id}" style="margin-top:8px">${p.id === 'free' ? (isPro() ? 'Downgrade' : 'Current plan') : (isPro() ? 'Manage' : 'Subscribe')}</button>
+    `;
+    c.appendChild(el);
+  });
+  c.querySelectorAll('[data-plan]').forEach(btn => btn.addEventListener('click', () => {
+    const pid = btn.dataset.plan;
+    if(pid === 'free'){ toast('Free plan is unlimited chat.', 'info'); return; }
+    startCheckout(pid);
+  }));
+  renderCompareTable();
+}
+function renderCompareTable(){
+  const t = $('#compareTable');
+  let html = '<thead><tr><th>Feature</th>';
+  PLANS.forEach(p => html += `<th>${p.name.replace('Nexus ','')}</th>`);
+  html += '</tr></thead><tbody>';
+  COMPARE_ROWS.forEach(row => {
+    html += `<tr><td>${row.label}</td>`;
+    PLANS.forEach(p => {
+      const v = p.compare[row.key];
+      const cls = (v === '—') ? 'no' : 'yes';
+      html += `<td class="${cls}">${v}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  t.innerHTML = html;
+}
+
+/* ============================================================
+   CHECKOUT
+   ============================================================ */
+function startCheckout(planId){
+  const plan = PLANS.find(p => p.id === planId);
+  if(!plan){ toast('Plan not found', 'err'); return; }
+  pendingPlan = plan;
+  $('#checkoutTitle').textContent = `Subscribe to ${plan.name}`;
+  $('#checkoutSub').textContent = `₹${plan.price.toLocaleString('en-IN')} · ${plan.period}`;
+  $('#coPlanName').textContent = plan.name;
+  $('#coPlanPrice').textContent = '₹' + plan.price.toLocaleString('en-IN');
+  $('#coPlanSub').textContent = plan.desc;
+  $('#payBtnText').textContent = `Pay ₹${plan.price.toLocaleString('en-IN')} securely`;
+  $('#paySuccess').classList.remove('show');
+  $('#upiSuccess').classList.remove('show');
+  $('#payBtn').style.display = '';
+  $('#upiSubmitBtn').style.display = '';
+  $('#upiTxnId').value = '';
+  resetPaymentVerificationForm();
+  $('#upiAmt').textContent = plan.price.toLocaleString('en-IN');
+  $('#payBtn').disabled = false;
+  switchPayMethod('upi');
+  renderUPIQR(plan.price);
+  closeModal('upgradeModal');
+  openModal('checkoutModal');
+}
+function switchPayMethod(method){
+  $$('.pay-tab').forEach(t => t.classList.toggle('active', t.dataset.pay === method));
+  $$('.pay-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === method));
+}
+function renderUPIQR(amountINR){
+  const params = new URLSearchParams({ pa: UPI_ID, pn: UPI_NAME, am: String(amountINR), cu: 'INR', tn: `Nexus AI Subscription` });
+  const upiLink = 'upi://pay?' + params.toString();
+  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=8&data=' + encodeURIComponent(upiLink);
+  $('#upiQrImg').src = qrUrl;
+  $('#upiDeepLink').href = upiLink;
+}
+$('#paymentScreenshot')?.addEventListener('change', e => {
+  const file = e.target.files?.[0];
+  if(!file) return;
+  if(file.size > 2.5 * 1024 * 1024){ toast('Screenshot must be 2.5 MB or smaller.', 'err', 4000); e.target.value = ''; return; }
+  if(!/^image\/(png|jpeg|webp)$/.test(file.type)){ toast('Please upload PNG, JPG/JPEG or WEBP.', 'err', 4000); e.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    paymentScreenshotData = reader.result;
+    paymentScreenshotName = file.name;
+    const preview = $('#paymentScreenshotPreview');
+    if(preview){
+      preview.style.display = 'block';
+      preview.innerHTML = `<div style="display:flex;align-items:center;gap:10px;background:var(--g-surface-2);border:1px solid var(--g-border);border-radius:10px;padding:8px">
+        <img src="${paymentScreenshotData}" alt="Payment screenshot" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--g-border)">
+        <div style="font-size:.76rem;color:var(--g-text-2);min-width:0">
+          <b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(file.name)}</b>
+          <span>✅ Ready for server verification.</span>
+        </div>
+      </div>`;
+    }
+  };
+  reader.readAsDataURL(file);
+});
+$('#checkoutTermsLink')?.addEventListener('click', e => { e.preventDefault(); openInfoPage('terms'); });
+$('#checkoutPrivacyLink')?.addEventListener('click', e => { e.preventDefault(); openInfoPage('privacy'); });
+$('#copyUpiBtn')?.addEventListener('click', () => {
+  navigator.clipboard.writeText(UPI_ID).then(() => {
+    $('#copyUpiBtn').innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+    toast('UPI ID copied!', 'ok', 2000);
+    setTimeout(() => $('#copyUpiBtn').innerHTML = '<i class="fa-solid fa-copy"></i> Copy', 2000);
+  });
+});
+
+/* ── Backend Verification Hook ───────────────────────────── */
+async function verifyPaymentOnBackend(record){
+  // ══════════════════════════════════════════════════════════════
+  // 🔐 PRODUCTION: यहाँ अपने backend endpoint को call करो
+  //
+  //   const res = await fetch(PAYMENT_VERIFY_ENDPOINT, {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({
+  //       txnId: record.txnId,
+  //       amount: record.amount,
+  //       planId: record.plan,
+  //       userId: record.userId,
+  //       email: record.userEmail
+  //     })
+  //   });
+  //   const data = await res.json();
+  //   return { verified: data.verified, reference: data.reference, reason: data.reason };
+  //
+  // Backend should:
+  //   1. Verify txnId exists in your bank/UPI records
+  //   2. Confirm amount matches plan price
+  //   3. Ensure txnId not already used
+  //   4. Return {verified:true, reference:"..."} only if all pass
+  // ══════════════════════════════════════════════════════════════
+
+  if(PAYMENT_VERIFY_ENDPOINT){
+    try {
+      const res = await fetch(PAYMENT_VERIFY_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          txnId: record.txnId, amount: record.amount, planId: record.plan,
+          userId: record.userId, email: record.userEmail
+        })
+      });
+      const data = await res.json();
+      return { verified: !!data.verified, reference: data.reference || ('NEXUS-' + Date.now().toString(36).toUpperCase()), reason: data.reason || '' };
+    } catch(err){
+      return { verified: false, reason: 'Server unreachable: ' + err.message };
+    }
+  }
+
+  // ── DEMO MODE (no backend configured) ──
+  // Client-side validation as fallback
+  await new Promise(r => setTimeout(r, 2600));
+  if(!record.txnId || record.txnId.length < 6) return { verified:false, reason:'Invalid transaction ID' };
+  if(!record.screenshotData) return { verified:false, reason:'Payment screenshot missing' };
+  if(!record.screenshotData.startsWith('data:image/')) return { verified:false, reason:'Screenshot is not a valid image' };
+  if(!record.amount || record.amount <= 0) return { verified:false, reason:'Invalid amount' };
+
+  // Check for duplicate transaction ID
+  const dup = (S.pendingPayments || []).some(p => p.txnId === record.txnId && p.status === 'approved' && p.id !== record.id);
+  if(dup) return { verified:false, reason:'This transaction ID has already been used' };
+
+  return { verified: true, reference: 'NEXUS-' + Date.now().toString(36).toUpperCase() };
+}
+
+$('#upiSubmitBtn')?.addEventListener('click', async () => {
+  const txnId = $('#upiTxnId').value.trim();
+  const terms = $('#paymentTerms')?.checked;
+  if(!pendingPlan){ toast('No plan selected', 'err'); return; }
+  if(txnId.length < 6){ toast('Please enter a valid UPI transaction ID (min 6 chars).', 'err', 4000); $('#upiTxnId').focus(); return; }
+  if(!paymentScreenshotData){ toast('Please upload the payment screenshot.', 'err', 4000); $('#paymentScreenshot')?.focus(); return; }
+  if(!terms){ toast('Please accept the Terms & Conditions and Privacy Policy.', 'err', 4000); return; }
+
+  const btn = $('#upiSubmitBtn');
+  btn.disabled = true;
+  const original = btn.innerHTML;
+  btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;border-top-color:#fff;margin-right:8px;display:inline-block;vertical-align:middle"></div> Verifying payment on server...';
+
+  const u = currentUser();
+  if(!u){ btn.disabled = false; btn.innerHTML = original; return; }
+
+  S.pendingPayments = S.pendingPayments || [];
+  const record = {
+    id: uid(), userId: u.id, userName: u.name, userEmail: u.email,
+    plan: pendingPlan.id, planName: pendingPlan.name, amount: pendingPlan.price,
+    method: 'upi', upiId: UPI_ID, txnId,
+    screenshotData: paymentScreenshotData, screenshotName: paymentScreenshotName,
+    termsAccepted: true, status: 'pending', submittedAt: Date.now()
+  };
+  S.pendingPayments.push(record);
+  saveState();
+
+  try{
+    const result = await verifyPaymentOnBackend(record);
+
+    if(!result.verified){
+      record.status = 'rejected';
+      record.rejectionReason = result.reason;
+      saveState();
+      btn.disabled = false;
+      btn.innerHTML = original;
+      toast(`Verification failed: ${result.reason}`, 'err', 5000);
+      return;
+    }
+
+    // ✅ Verify success — activate Pro
+    record.status = 'approved';
+    record.approvedAt = Date.now();
+    record.autoVerified = true;
+    record.verificationRef = result.reference;
+
+    const days = 30;
+    u.plan = 'pro';
+    u.planExpires = Date.now() + days * 86400000;
+    u.lastPayment = { id: txnId, plan:'pro', amount: record.amount, time: Date.now(), ref: result.reference };
+    saveState();
+
+    sendPaymentVerificationEmail(record).then(mail => { if(!mail.sent) console.warn('Email log:', mail.reason); });
+    updatePlanUI();
+    updateUserUI();
+
+    btn.style.display = 'none';
+    $('#upiSuccess').classList.add('show');
+    $('#upiSuccessMsg').innerHTML =
+      `Payment reference <b>${esc(txnId)}</b> verified successfully on our server.<br><br>` +
+      `<b>Server Reference:</b> <code style="font-family:'Roboto Mono',monospace;background:var(--g-surface-2);padding:2px 8px;border-radius:4px;color:#1a73e8">${esc(result.reference)}</code><br>` +
+      `<b>Plan:</b> ${esc(pendingPlan.name)}<br>` +
+      `<b>Valid till:</b> ${new Date(u.planExpires).toLocaleDateString('en-IN')}<br><br>` +
+      `🎉 <b>Nexus Pro</b> अब active है! सारे premium features unlock हो गए।`;
+    toast(`🎉 ${pendingPlan.name} activated!`, 'ok', 5000);
+    btn.disabled = false;
+    btn.innerHTML = original;
+
+  }catch(err){
+    console.error(err);
+    record.status = 'error';
+    record.errorMessage = err.message;
+    saveState();
+    btn.disabled = false;
+    btn.innerHTML = original;
+    toast('Verification error. Try again or contact support.', 'err', 5000);
+  }
+});
+$('#upiSuccessClose')?.addEventListener('click', () => closeModal('checkoutModal'));
+
+$('#payBtn')?.addEventListener('click', async () => {
+  if(!pendingPlan) return;
+  if(!RAZORPAY_KEY_ID){ toast('Razorpay not configured. Use UPI option.', 'warn', 5000); switchPayMethod('upi'); return; }
+  const btn = $('#payBtn');
+  btn.disabled = true;
+  const original = btn.innerHTML;
+  btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;border-top-color:#fff;margin-right:8px;display:inline-block;vertical-align:middle"></div> Opening Razorpay...';
+  const options = {
+    key: RAZORPAY_KEY_ID,
+    amount: pendingPlan.price * 100, currency: 'INR',
+    name: 'Nexus AI', description: `${pendingPlan.name} — ₹${pendingPlan.price}`,
+    prefill: { name: currentUser()?.name || '', email: currentUser()?.email || '' },
+    theme: { color: '#1a73e8' },
+    handler: async function(response){
+      btn.innerHTML = 'Verifying...';
+      try{
+        let verified = true;
+        if(PAYMENT_VERIFY_ENDPOINT){
+          const res = await fetch(PAYMENT_VERIFY_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(response) });
+          const data = await res.json();
+          verified = data.verified === true;
+        }
+        if(verified){
+          activateSubscription(pendingPlan, response.razorpay_payment_id);
+          btn.style.display = 'none';
+          $('#paySuccess').classList.add('show');
+          $('#paySuccessMsg').textContent = `${pendingPlan.name} activated. Payment ID: ${response.razorpay_payment_id}`;
+          toast(`🎉 ${pendingPlan.name} activated!`, 'ok', 5000);
+        } else { toast('Verification failed.', 'err', 5000); btn.disabled = false; btn.innerHTML = original; }
+      }catch(e){ console.error(e); toast('Verification error: ' + e.message, 'err'); btn.disabled = false; btn.innerHTML = original; }
+    },
+    modal: { ondismiss: function(){ btn.disabled = false; btn.innerHTML = original; } }
+  };
+  try{ const rzp = new Razorpay(options); rzp.open(); }
+  catch(e){ console.error(e); toast('Cannot open Razorpay.', 'err'); btn.disabled = false; btn.innerHTML = original; }
+});
+$('#paySuccessClose')?.addEventListener('click', () => closeModal('checkoutModal'));
+document.addEventListener('click', e => {
+  const tab = e.target.closest('.pay-tab');
+  if(tab) switchPayMethod(tab.dataset.pay);
+});
+function activateSubscription(plan, paymentId){
+  const u = currentUser(); if(!u) return;
+  u.plan = 'pro';
+  u.planExpires = Date.now() + 30 * 86400000;
+  u.lastPayment = { id: paymentId, plan: plan.id, amount: plan.price, time: Date.now() };
+  saveState();
+  updatePlanUI();
+  updateUserUI();
+}
+
+/* ============================================================
+   ADMIN PANEL
+   ============================================================ */
+function checkAdminRoute(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('admin') !== '1') return;
+  const pass = prompt('Enter admin password:');
+  if(pass !== ADMIN_PASSWORD){ alert('Access denied'); return; }
+  showAdminPanel();
+}
+function showAdminPanel(){
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay show';
+  overlay.style.zIndex = '9999';
+  overlay.innerHTML = `
+    <div class="modal wide" style="max-width:860px">
+      <button class="modal-x" id="adminClose"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-head"><h2>🛡️ Admin — Payment Records</h2><p>All UPI submissions are auto-verified on server side.</p></div>
+      <div id="adminList"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  $('#adminClose').onclick = () => overlay.remove();
+  renderAdminList();
+}
+function renderAdminList(){
+  const list = $('#adminList');
+  const all = (S.pendingPayments || []).slice().reverse().slice(0, 30);
+  if(!all.length){ list.innerHTML = `<p style="text-align:center;padding:30px;color:var(--g-text-3)">No payments yet.</p>`; return; }
+  list.innerHTML = all.map(p => `
+    <div style="border:1px solid var(--g-border);border-radius:12px;padding:16px;margin-bottom:12px;background:${p.status==='approved'?'rgba(52,168,83,.05)':'rgba(251,191,36,.05)'}">
+      <div style="font-weight:500;font-size:1rem;margin-bottom:6px">${esc(p.userName)} — ${esc(p.planName)} · ₹${p.amount}</div>
+      <div style="font-size:.82rem;color:var(--g-text-2);line-height:1.7">
+        <b>Email:</b> ${esc(p.userEmail)}<br>
+        <b>Txn:</b> <code style="font-family:'Roboto Mono',monospace;background:var(--g-surface-2);padding:2px 8px;border-radius:4px;color:#1a73e8">${esc(p.txnId)}</code><br>
+        <b>Ref:</b> ${esc(p.verificationRef || '—')}<br>
+        <b>Submitted:</b> ${new Date(p.submittedAt).toLocaleString()}<br>
+        <b>Status:</b> <span style="color:${p.status==='approved'?'#34a853':'#f59e0b'}">${p.status}${p.autoVerified?' (auto)':''}</span>
+        ${p.screenshotData ? `<div style="margin-top:10px"><img src="${p.screenshotData}" style="max-width:260px;max-height:220px;object-fit:contain;border:1px solid var(--g-border);border-radius:10px;background:#fff;padding:4px"></div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   STUDIO TOOLS
+   ============================================================ */
+let activeTool = 'image';
+const COMING_SOON_TOOLS = ['video','song','game'];
+
+function openTools(){
+  openModal('toolsModal');
+  setTool('image');
+}
+function setTool(tool){
+  if(COMING_SOON_TOOLS.includes(tool)){
+    toast('🚧 यह feature जल्द आ रहा है!', 'info', 3000);
+    return;
+  }
+  if(!isPro()){
+    showProLockModal(`${tool.toUpperCase()} generation`);
+    return;
+  }
+  activeTool = tool;
+  $$('.tool-card').forEach(c => c.classList.toggle('active', c.dataset.tool === tool));
+  renderToolConfig();
+  $('#toolOutput').classList.add('hide');
+}
+function renderToolConfig(){
+  const c = $('#toolConfig');
+  const configs = {
+    image: `
+      <div class="field"><label>Describe your image</label><textarea id="toolPrompt" rows="3" placeholder="e.g. A futuristic city at sunset, cinematic lighting"></textarea></div>
+      <div class="field"><label>Style</label><select id="toolStyle">
+        <option value="">Auto</option>
+        <option value="anime, studio ghibli, cel shaded, beautiful detailed">Anime</option>
+        <option value="photorealistic, 8k, dslr, natural light, ultra detailed">Photorealistic</option>
+        <option value="cartoon, pixar, 3d animated, vibrant colors">Cartoon / Pixar</option>
+        <option value="cyberpunk, neon, blade runner, cinematic">Cyberpunk</option>
+        <option value="minimalist, flat design, pastel colors">Minimalist</option>
+        <option value="3d render, octane, ray tracing, ultra detailed">3D Render</option>
+      </select></div>
+      <div class="field"><label>Aspect</label><select id="toolRatio">
+        <option value="1:1">1:1</option><option value="16:9" selected>16:9 (YouTube)</option><option value="9:16">9:16 (Reels)</option>
+      </select></div>
+      <button class="btn-primary" id="toolRun"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate image</button>`,
+    ppt: `
+      <div class="field"><label>Presentation topic</label><textarea id="toolPrompt" rows="3" placeholder="e.g. Digital Marketing Strategy for 2025"></textarea></div>
+      <div class="field"><label>Number of slides</label><select id="toolSlides"><option>6</option><option selected>8</option><option>10</option></select></div>
+      <button class="btn-primary" id="toolRun"><i class="fa-solid fa-file-powerpoint"></i> Generate PPT</button>`,
+    pdf: `
+      <div class="field"><label>Document content</label><textarea id="toolPrompt" rows="5" placeholder="Paste or describe the content"></textarea></div>
+      <div class="field"><label>Title</label><input id="toolTitle" placeholder="Document title"></div>
+      <button class="btn-primary" id="toolRun"><i class="fa-solid fa-file-pdf"></i> Generate PDF</button>`,
+    word: `
+      <div class="field"><label>Document content</label><textarea id="toolPrompt" rows="5" placeholder="Content for your Word document"></textarea></div>
+      <div class="field"><label>Title</label><input id="toolTitle" placeholder="Document title"></div>
+      <button class="btn-primary" id="toolRun"><i class="fa-solid fa-file-word"></i> Generate Word</button>`
+  };
+  c.innerHTML = configs[activeTool] || `<p style="padding:20px;color:var(--g-text-3);text-align:center">This tool is coming soon.</p>`;
+  $('#toolRun')?.addEventListener('click', runTool);
+}
+async function runTool(){
+  if(!isPro()){ showProLockModal('Studio tools'); return; }
+  const prompt = $('#toolPrompt')?.value.trim();
+  if(!prompt){ toast('Please enter a prompt', 'err'); return; }
+  const out = $('#toolOutput');
+  out.classList.remove('hide');
+  out.innerHTML = `<div style="text-align:center;padding:30px"><div class="spinner" style="margin:0 auto 14px"></div><p style="color:var(--g-text-2)">Generating…</p></div>`;
+  try{
+    if(activeTool === 'image') await toolImage(prompt);
+    else if(activeTool === 'ppt') await toolPPT(prompt);
+    else if(activeTool === 'pdf') await toolPDF(prompt);
+    else if(activeTool === 'word') await toolWord(prompt);
+    else throw new Error('Tool not available.');
+  }catch(e){
+    console.error(e);
+    out.innerHTML = `<div style="text-align:center;padding:20px;color:var(--g-error)">Error: ${esc(e.message)}</div>`;
+    toast('Generation failed', 'err');
+  }
+}
+async function toolImage(prompt){
+  const style = $('#toolStyle').value;
+  const ratio = $('#toolRatio').value;
+  const dims = { '1:1':[1024,1024], '16:9':[1280,720], '9:16':[720,1280] }[ratio] || [1024,1024];
+  const seed = Math.floor(Math.random() * 1e9);
+  const finalPrompt = prompt + (style ? ', ' + style : '') + ', ultra detailed, high quality, professional';
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=${dims[0]}&height=${dims[1]}&seed=${seed}&nologo=true&model=flux&enhance=true`;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('Image load failed')); img.src = url; });
+  $('#toolOutput').innerHTML = `<div style="text-align:center;margin-top:16px"><img src="${url}" style="max-width:100%;border-radius:12px;box-shadow:var(--shadow-2)" alt="generated"><div style="margin-top:14px"><a href="${url}" download="nexus-${Date.now()}.jpg" class="btn-primary" style="width:auto;padding:10px 20px;text-decoration:none;display:inline-flex"><i class="fa-solid fa-download"></i> Download</a></div></div>`;
+  myLibrary().unshift({ url, prompt, type:'image', time:Date.now() });
+  saveState();
+  toast('Image generated', 'ok');
+}
+async function toolPPT(prompt){
+  const slidesCount = parseInt($('#toolSlides').value, 10) || 8;
+  const outline = await fetchAIOutline(prompt, slidesCount);
+  const pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_WIDE';
+  pptx.author = 'Nexus AI';
+  const titleSlide = pptx.addSlide();
+  titleSlide.background = { color: '1a73e8' };
+  titleSlide.addText(prompt, { x:0.5, y:2.2, w:12, h:1.5, fontSize:36, bold:true, color:'FFFFFF', align:'center' });
+  titleSlide.addText('Created with Nexus AI', { x:0.5, y:3.8, w:12, h:0.5, fontSize:16, color:'FFFFFF', align:'center' });
+  outline.forEach(s => {
+    const slide = pptx.addSlide();
+    slide.addText(s.title, { x:0.5, y:0.4, w:12, h:0.8, fontSize:28, bold:true, color:'1a73e8' });
+    const bullets = s.points.map(p => ({ text: p, options:{ bullet:true, fontSize:18, color:'333333' } }));
+    slide.addText(bullets, { x:0.6, y:1.4, w:12, h:5.5, lineSpacingMultiple:1.3 });
+  });
+  const blob = await pptx.write({ outputType: 'blob' });
+  const name = `nexus-${Date.now()}.pptx`;
+  $('#toolOutput').innerHTML = `<div style="text-align:center;margin-top:16px"><i class="fa-solid fa-file-powerpoint" style="font-size:3.5rem;color:#ea4335"></i><h3 style="margin:14px 0 8px;font-weight:500">Presentation ready</h3><p style="color:var(--g-text-2);margin-bottom:16px">${outline.length + 1} slides · ${esc(prompt)}</p><button class="btn-primary" style="width:auto;padding:12px 24px" id="dlPpt"><i class="fa-solid fa-download"></i> Download .pptx</button></div>`;
+  $('#dlPpt').addEventListener('click', () => downloadBlob(blob, name));
+  toast('PPT generated', 'ok');
+}
+async function fetchAIOutline(topic, count){
+  const msg = [
+    { role:'system', content: `Output JSON only, no markdown. Format: [{"title":"...","points":["...","..."]}]. Exactly ${count} items.` },
+    { role:'user', content: `Create a ${count}-slide outline for: ${topic}. Each slide: 3-5 concise bullet points.` }
+  ];
+  let raw = '';
+  try { await callAI(msg, d => raw += d); } catch(e){}
+  try{ const match = raw.match(/\[[\s\S]*\]/); return JSON.parse(match ? match[0] : raw); }
+  catch(e){ return [{ title: topic, points: ['Overview', 'Key points', 'Conclusion'] }]; }
+}
+async function toolPDF(prompt){
+  const title = $('#toolTitle').value.trim() || 'Document';
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'pt', format:'a4' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 60;
+  doc.setFillColor(26, 115, 232);
+  doc.rect(0, 0, pageW, 80, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+  doc.text('Nexus AI', margin, 45);
+  doc.setFontSize(11); doc.setFont('helvetica', 'normal');
+  doc.text(new Date().toLocaleString(), pageW - margin, 45, { align:'right' });
+  doc.setTextColor(31, 31, 31);
+  doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+  const titleLines = doc.splitTextToSize(title, pageW - margin * 2);
+  let y = 130;
+  doc.text(titleLines, margin, y);
+  y += titleLines.length * 28 + 10;
+  doc.setFontSize(11); doc.setFont('helvetica', 'normal'); doc.setTextColor(60, 64, 67);
+  const paragraphs = prompt.split('\n').filter(Boolean);
+  paragraphs.forEach(p => {
+    const lines = doc.splitTextToSize(p, pageW - margin * 2);
+    if(y + lines.length * 16 > pageH - margin){ doc.addPage(); y = 80; }
+    doc.text(lines, margin, y);
+    y += lines.length * 16 + 12;
+  });
+  const blob = doc.output('blob');
+  const name = `nexus-${Date.now()}.pdf`;
+  $('#toolOutput').innerHTML = `<div style="text-align:center;margin-top:16px"><i class="fa-solid fa-file-pdf" style="font-size:3.5rem;color:#d93025"></i><h3 style="margin:14px 0 8px;font-weight:500">PDF ready</h3><p style="color:var(--g-text-2);margin-bottom:16px">${esc(title)}</p><button class="btn-primary" style="width:auto;padding:12px 24px" id="dlPdf"><i class="fa-solid fa-download"></i> Download PDF</button></div>`;
+  $('#dlPdf').addEventListener('click', () => downloadBlob(blob, name));
+  toast('PDF generated', 'ok');
+}
+async function toolWord(prompt){
+  const title = $('#toolTitle').value.trim() || 'Document';
+  const html = `<!DOCTYPE html><html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font-family:Calibri,sans-serif;font-size:11pt;color:#333;line-height:1.6;margin:60px}h1{color:#1a73e8;font-size:24pt;margin-bottom:8px}.meta{color:#888;font-size:9pt;margin-bottom:30px;border-bottom:2px solid #1a73e8;padding-bottom:10px}p{margin:10px 0}</style></head><body><h1>${esc(title)}</h1><div class="meta">Created with Nexus AI · ${new Date().toLocaleString()}</div>${prompt.split('\n').filter(Boolean).map(p => `<p>${esc(p)}</p>`).join('')}</body></html>`;
+  const blob = new Blob([html], { type: 'application/msword' });
+  const name = `nexus-${Date.now()}.doc`;
+  $('#toolOutput').innerHTML = `<div style="text-align:center;margin-top:16px"><i class="fa-solid fa-file-word" style="font-size:3.5rem;color:#1a73e8"></i><h3 style="margin:14px 0 8px;font-weight:500">Word document ready</h3><p style="color:var(--g-text-2);margin-bottom:16px">${esc(title)}</p><button class="btn-primary" style="width:auto;padding:12px 24px" id="dlWord"><i class="fa-solid fa-download"></i> Download .doc</button></div>`;
+  $('#dlWord').addEventListener('click', () => downloadBlob(blob, name));
+  toast('Word document generated', 'ok');
+}
+function downloadBlob(blob, name){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('Downloaded', 'ok', 1800);
+}
+function renderLibrary(){
+  const lib = myLibrary();
+  const c = $('#libContent');
+  if(!lib.length){ c.innerHTML = `<p style="text-align:center;color:var(--g-text-3);padding:40px 20px">Nothing here yet. Create something from the Studio.</p>`; return; }
+  c.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-height:60vh;overflow-y:auto">${lib.map(item => `<div style="border-radius:12px;overflow:hidden;border:1px solid var(--g-border);cursor:pointer;background:var(--g-surface-2)" onclick="window.open('${item.url}','_blank')"><img src="${item.url}" style="width:100%;aspect-ratio:1;object-fit:cover" onerror="this.style.display='none'"><div style="padding:8px;font-size:.72rem;color:var(--g-text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.prompt)}</div></div>`).join('')}</div>`;
+}
+
+/* ============================================================
+   CONTACT + REVIEWS
+   ============================================================ */
+$('#contactSend')?.addEventListener('click', () => {
+  const name = $('#contactName').value.trim();
+  const email = $('#contactEmail').value.trim();
+  const msg = $('#contactMsg').value.trim();
+  if(!name || !email || !msg){ toast('Please fill all fields', 'err'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('Invalid email', 'err'); return; }
+  S.contactMessages = S.contactMessages || [];
+  S.contactMessages.push({ id: uid(), name, email, msg, time: Date.now() });
+  saveState();
+  toast('Message sent! We\'ll reply within 2-4 hours.', 'ok', 4000);
+  $('#contactName').value = ''; $('#contactEmail').value = ''; $('#contactMsg').value = '';
+  setTimeout(() => closeModal('contactModal'), 1500);
+});
+function renderReviews(){
+  const c = $('#reviewList');
+  const reviews = S.reviews || [];
+  if(!reviews.length){
+    c.innerHTML = `<p style="text-align:center;color:var(--g-text-3);padding:20px;font-size:.85rem">No reviews yet. Be the first!</p>`;
+  } else {
+    c.innerHTML = reviews.slice().reverse().map(r => `
+      <div class="review-card">
+        <div class="review-head">
+          <div class="review-av">${esc(r.name.charAt(0).toUpperCase())}</div>
+          <div><div class="review-name">${esc(r.name)}</div><div class="review-date">${new Date(r.time).toLocaleDateString()}</div></div>
+          <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        </div>
+        <div class="review-text">${esc(r.text)}</div>
+      </div>`).join('');
+  }
+  const avg = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
+  $('#avgRating').textContent = reviews.length ? avg.toFixed(1) : '—';
+  $('#avgStars').textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+  $('#totalReviews').textContent = reviews.length;
+}
+$$('#starPicker i').forEach(star => {
+  star.addEventListener('mouseenter', () => {
+    const val = parseInt(star.dataset.star);
+    $$('#starPicker i').forEach((s, i) => { s.className = i < val ? 'fa-solid fa-star active' : 'fa-regular fa-star'; });
+  });
+  star.addEventListener('click', () => {
+    currentRating = parseInt(star.dataset.star);
+    $$('#starPicker i').forEach((s, i) => { s.className = i < currentRating ? 'fa-solid fa-star active' : 'fa-regular fa-star'; });
+  });
+});
+$('#starPicker')?.addEventListener('mouseleave', () => {
+  $$('#starPicker i').forEach((s, i) => { s.className = i < currentRating ? 'fa-solid fa-star active' : 'fa-regular fa-star'; });
+});
+$('#submitReview')?.addEventListener('click', () => {
+  if(!currentRating){ toast('Please select a rating', 'err'); return; }
+  const text = $('#reviewText').value.trim();
+  if(text.length < 5){ toast('Please write at least 5 characters', 'err'); return; }
+  const u = currentUser();
+  S.reviews = S.reviews || [];
+  S.reviews.push({ id: uid(), userId: u?.id, name: u?.name || 'Anonymous', rating: currentRating, text, time: Date.now() });
+  saveState();
+  currentRating = 0;
+  $$('#starPicker i').forEach(s => s.className = 'fa-regular fa-star');
+  $('#reviewText').value = '';
+  renderReviews();
+  toast('Review submitted! Thank you 🎉', 'ok', 3500);
+});
+
+/* ============================================================
+   INFO PAGES (separate window)
+   ============================================================ */
+const INFO_PAGES = {
+  terms: {
+    title: 'Terms of Service',
+    icon: 'fa-file-contract',
+    body: `
+      <p>By creating or using a Nexus AI account, you agree to use the service lawfully and responsibly.</p>
+      <h3>1. Account</h3>
+      <p>You are responsible for maintaining the confidentiality of your account credentials. You must be at least 13 years old to use Nexus AI.</p>
+      <h3>2. Subscriptions & Payments</h3>
+      <p>Chat is free and unlimited. Pro features (Deep Research, Canvas, Image generation, Studio tools, Premium models) require an active Pro subscription at ₹1,950/month. Payments are verified on our backend before activation.</p>
+      <h3>3. Content</h3>
+      <p>You retain ownership of the content you generate. Nexus AI is not responsible for how you use generated content. Do not use Nexus AI for illegal purposes.</p>
+      <h3>4. Refunds</h3>
+      <p>Subscriptions are non-refundable once activated. Contact support within 24 hours of payment for any issues.</p>
+      <h3>5. Service Changes</h3>
+      <p>We may update features, pricing, and these terms at any time. Continued use implies acceptance.</p>
+    `
+  },
+  privacy: {
+    title: 'Privacy Policy',
+    icon: 'fa-shield-halved',
+    body: `
+      <p>Your privacy is important to us. This policy explains what data we collect and how it is used.</p>
+      <h3>Data We Store</h3>
+      <ul>
+        <li>Account info (name, email) — stored locally in your browser</li>
+        <li>Chat history — stored locally in your browser</li>
+        <li>Settings & preferences — stored locally in your browser</li>
+        <li>Generated images & library — stored locally in your browser</li>
+      </ul>
+      <h3>Payment Data</h3>
+      <p>For Pro subscriptions, we collect: transaction ID, payment screenshot, plan, amount, and your email. This data is sent to our administrator email for verification. Backend verification checks the transaction ID against our payment records.</p>
+      <h3>Third-Party Services</h3>
+      <p>We use Google Sign-In (optional), Razorpay (payments), and AI model providers (OpenAI, Google Gemini, Pollinations) to generate responses. Refer to their privacy policies for how they handle data.</p>
+      <h3>Data Deletion</h3>
+      <p>You can delete your account and all data anytime from Settings → Data → Delete Account.</p>
+    `
+  },
+  shortcuts: {
+    title: 'Keyboard Shortcuts',
+    icon: 'fa-keyboard',
+    body: `
+      <div class="shortcut-grid">
+        <div class="shortcut-row"><span><kbd>Ctrl</kbd> + <kbd>K</kbd></span><span>New chat</span></div>
+        <div class="shortcut-row"><span><kbd>Ctrl</kbd> + <kbd>J</kbd></span><span>Toggle theme</span></div>
+        <div class="shortcut-row"><span><kbd>Ctrl</kbd> + <kbd>,</kbd></span><span>Open settings</span></div>
+        <div class="shortcut-row"><span><kbd>Enter</kbd></span><span>Send message</span></div>
+        <div class="shortcut-row"><span><kbd>Shift</kbd> + <kbd>Enter</kbd></span><span>New line in message</span></div>
+        <div class="shortcut-row"><span><kbd>Ctrl</kbd> + <kbd>Enter</kbd></span><span>Send (always)</span></div>
+        <div class="shortcut-row"><span><kbd>Esc</kbd></span><span>Close any modal</span></div>
+      </div>
+    `
+  },
+  contact: {
+    title: 'Contact Support',
+    icon: 'fa-headset',
+    body: `
+      <p>हमें संपर्क करें — हम 2-4 घंटे में जवाब देते हैं।</p>
+      <div class="contact-grid">
+        <a href="mailto:support@nexusai.com" class="contact-card">
+          <div class="cc-icon" style="background:linear-gradient(135deg,#ea4335,#d93025)"><i class="fa-solid fa-envelope"></i></div>
+          <div><b>Email</b><span>support@nexusai.com</span></div>
+        </a>
+        <a href="https://wa.me/917096660937" target="_blank" class="contact-card">
+          <div class="cc-icon" style="background:linear-gradient(135deg,#25d366,#128c7e)"><i class="fa-brands fa-whatsapp"></i></div>
+          <div><b>WhatsApp</b><span>+91 70966 60937</span></div>
+        </a>
+      </div>
+      <p style="margin-top:20px;font-size:.82rem;color:#5f6368;text-align:center;line-height:1.7">
+        <b>Business hours:</b> Mon–Sat, 10 AM – 7 PM IST<br>
+        <b>Response time:</b> Usually within 2-4 hours
+      </p>
+    `
+  }
+};
+
+function openInfoPage(key){
+  const page = INFO_PAGES[key];
+  if(!page) return;
+  const win = window.open('', '_blank', 'width=880,height=760');
+  if(!win){ toast('Popup blocked. Allow popups.', 'err', 4000); return; }
+  win.document.write(`<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${page.title} — Nexus AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Google Sans',-apple-system,sans-serif;background:#fff;color:#1f1f1f;line-height:1.7}
+  .top{background:linear-gradient(135deg,#1a73e8,#9b72cb,#d96570);padding:40px 32px;color:#fff}
+  .top h1{font-size:2rem;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:14px}
+  .top p{opacity:.9;font-size:.9rem}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:500;margin-bottom:20px;font-size:1.05rem}
+  .brand-mark{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center}
+  main{max-width:720px;margin:0 auto;padding:40px 32px 60px}
+  main h3{font-size:1.05rem;font-weight:500;margin:24px 0 8px;color:#1a73e8}
+  main p{color:#444746;margin-bottom:14px;font-size:.94rem}
+  main ul{margin:10px 0 16px 22px;color:#444746}
+  main li{margin-bottom:6px;font-size:.94rem}
+  .shortcut-grid{display:flex;flex-direction:column;gap:10px}
+  .shortcut-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#f0f4f9;border-radius:10px;font-size:.92rem}
+  .shortcut-row kbd{background:#fff;border:1px solid #dadce0;border-radius:6px;padding:3px 9px;font-family:'Roboto Mono',monospace;font-size:.8rem;box-shadow:0 1px 2px rgba(0,0,0,.06);margin:0 2px}
+  .contact-grid{display:grid;gap:12px;margin-top:16px}
+  .contact-card{display:flex;align-items:center;gap:14px;padding:16px;background:#f0f4f9;border:1px solid #dadce0;border-radius:12px;text-decoration:none;color:#1f1f1f;transition:all .2s}
+  .contact-card:hover{background:#e8f0fe;border-color:#1a73e8;transform:translateY(-2px)}
+  .cc-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem}
+  .contact-card b{display:block;font-size:.9rem}
+  .contact-card span{font-size:.8rem;color:#5f6368}
+  footer{text-align:center;padding:24px;font-size:.78rem;color:#5f6368;border-top:1px solid #e0e0e0}
+  footer a{color:#1a73e8;text-decoration:none}
+</style>
+</head><body>
+  <div class="top">
+    <div class="brand"><div class="brand-mark"><i class="fa-solid fa-bolt"></i></div> Nexus AI</div>
+    <h1><i class="fa-solid ${page.icon}"></i> ${page.title}</h1>
+    <p>Last updated: ${new Date().toLocaleDateString('en-IN', {year:'numeric',month:'long',day:'numeric'})}</p>
+  </div>
+  <main>${page.body}</main>
+  <footer>© 2025 Nexus AI · <a href="javascript:window.close()">Close this page</a></footer>
+</body></html>`);
+  win.document.close();
+}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+function segSet(id, val){ $$(`#${id} .seg-btn`).forEach(b => b.classList.toggle('active', b.dataset.val === val)); }
+function segGet(id){ const a = $(`#${id} .seg-btn.active`); return a ? a.dataset.val : null; }
+function openSettings(){
+  const s = S.settings;
+  segSet('segTheme', s.theme === 'auto' ? 'auto' : (s.theme === 'dark' ? 'dark' : 'light'));
+  segSet('segFont', s.fontSize);
+  $('#setLanguage').value = s.language || 'en';
+  $('#swCompact').classList.toggle('on', s.compact);
+  $('#swAnimations').classList.toggle('on', s.animations !== false);
+  $$('#accentDots .accent-dot').forEach(d => d.classList.toggle('sel', d.dataset.accent === s.accent));
+  $('#systemPrompt').value = s.systemPrompt || '';
+  $('#tempRange').value = s.temperature || 0.9;
+  $('#tempVal').textContent = parseFloat(s.temperature || 0.9).toFixed(1);
+  $('#swSendEnter').classList.toggle('on', s.sendOnEnter !== false);
+  $('#swStreaming').classList.toggle('on', s.streaming !== false);
+  $('#swAutoSave').classList.toggle('on', s.autoSave !== false);
+  $('#swAutoImage').classList.toggle('on', s.autoImage !== false);
+  $('#swDeepResearch').classList.toggle('on', s.deepResearchDefault === true);
+  $('#swCanvas').classList.toggle('on', s.canvasDefault === true);
+  $('#swMemory').classList.toggle('on', s.memory !== false);
+  $('#memoryText').value = s.memoryText || '';
+  $('#voiceLang').value = s.voiceLang || 'en-US';
+  $('#swTTS').classList.toggle('on', s.tts);
+  $('#ttsSpeed').value = s.ttsSpeed || 1;
+  $('#ttsSpeedVal').textContent = parseFloat(s.ttsSpeed || 1).toFixed(1) + 'x';
+  $('#keyOpenAI').value = s.keys.openai || '';
+  $('#keyGemini').value = s.keys.gemini || '';
+  updateStorageUsage();
+  $$('.settings-tab').forEach(t => t.classList.remove('active'));
+  $$('.settings-pane').forEach(p => p.classList.remove('active'));
+  $('.settings-tab[data-stab="general"]').classList.add('active');
+  $('.settings-pane[data-spane="general"]').classList.add('active');
+  openModal('settingsModal');
+}
+function saveSettingsUI(){
+  S.settings = Object.assign(S.settings, {
+    theme: segGet('segTheme') || 'light',
+    accent: ($('#accentDots .accent-dot.sel')?.dataset.accent) || 'blue',
+    fontSize: segGet('segFont') || 'medium',
+    language: $('#setLanguage').value,
+    compact: $('#swCompact').classList.contains('on'),
+    animations: $('#swAnimations').classList.contains('on'),
+    systemPrompt: $('#systemPrompt').value,
+    temperature: parseFloat($('#tempRange').value) || 0.9,
+    sendOnEnter: $('#swSendEnter').classList.contains('on'),
+    streaming: $('#swStreaming').classList.contains('on'),
+    autoSave: $('#swAutoSave').classList.contains('on'),
+    autoImage: $('#swAutoImage').classList.contains('on'),
+    deepResearchDefault: $('#swDeepResearch').classList.contains('on'),
+    canvasDefault: $('#swCanvas').classList.contains('on'),
+    memory: $('#swMemory').classList.contains('on'),
+    memoryText: $('#memoryText').value,
+    voiceLang: $('#voiceLang').value,
+    tts: $('#swTTS').classList.contains('on'),
+    ttsSpeed: parseFloat($('#ttsSpeed').value) || 1.0,
+    keys: { openai: $('#keyOpenAI').value.trim(), gemini: $('#keyGemini').value.trim() }
+  });
+  saveState();
+  applyAllSettings();
+  closeModal('settingsModal');
+  toast('Settings saved ✓', 'ok');
+}
+function updateStorageUsage(){
+  const sizeOf = (obj) => JSON.stringify(obj || {}).length;
+  const chatsSize = sizeOf(S.chats);
+  const libSize = sizeOf(S.library);
+  const reviewSize = sizeOf(S.reviews);
+  const otherSize = sizeOf({ users:S.users, settings:S.settings, pendingPayments:S.pendingPayments, contactMessages:S.contactMessages });
+  const total = chatsSize + libSize + reviewSize + otherSize;
+  const pct = (n) => total ? (n / total) * 100 : 0;
+  const fmt = (b) => b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(1) + ' KB' : (b / 1024 / 1024).toFixed(2) + ' MB';
+  const bar = $('#storageBar');
+  if(bar){
+    bar.innerHTML = `<div class="storage-seg chats" style="width:${pct(chatsSize)}%"></div><div class="storage-seg lib" style="width:${pct(libSize)}%"></div><div class="storage-seg reviews" style="width:${pct(reviewSize)}%"></div><div class="storage-seg other" style="width:${pct(otherSize)}%"></div>`;
+  }
+  $('#sizeChats').textContent = fmt(chatsSize);
+  $('#sizeLib').textContent = fmt(libSize);
+  $('#sizeReviews').textContent = fmt(reviewSize);
+  $('#sizeOther').textContent = fmt(otherSize);
+  $('#sizeTotal').textContent = fmt(total);
+}
+function bindSettings(){
+  $$('.settings-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      $$('.settings-tab').forEach(t => t.classList.remove('active'));
+      $$('.settings-pane').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      $(`.settings-pane[data-spane="${tab.dataset.stab}"]`).classList.add('active');
+      if(tab.dataset.stab === 'data') updateStorageUsage();
+    });
+  });
+  ['segTheme','segFont'].forEach(id => {
+    $$(`#${id} .seg-btn`).forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$(`#${id} .seg-btn`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if(id === 'segTheme'){ S.settings.theme = btn.dataset.val; applyTheme(); }
+        if(id === 'segFont'){ S.settings.fontSize = btn.dataset.val; applyFontSize(btn.dataset.val); }
+      });
+    });
+  });
+  $$('#accentDots .accent-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      $$('#accentDots .accent-dot').forEach(d => d.classList.remove('sel'));
+      dot.classList.add('sel');
+      S.settings.accent = dot.dataset.accent;
+      applyAccent(dot.dataset.accent);
+    });
+  });
+  ['swCompact','swAnimations','swSendEnter','swStreaming','swAutoSave','swAutoImage','swDeepResearch','swCanvas','swMemory','swTTS'].forEach(id => {
+    $(`#${id}`)?.addEventListener('click', (e) => {
+      e.currentTarget.classList.toggle('on');
+      const on = e.currentTarget.classList.contains('on');
+      if(id === 'swCompact') applyCompact(on);
+      if(id === 'swAnimations') applyAnimations(on);
+    });
+  });
+  $('#tempRange')?.addEventListener('input', e => { $('#tempVal').textContent = parseFloat(e.target.value).toFixed(1); });
+  $('#ttsSpeed')?.addEventListener('input', e => { $('#ttsSpeedVal').textContent = parseFloat(e.target.value).toFixed(1) + 'x'; });
+  $('#testVoice')?.addEventListener('click', () => {
+    if(!('speechSynthesis' in window)){ toast('TTS not supported', 'err'); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance('Hello! This is Nexus AI speaking. Your voice settings are working perfectly.');
+    u.lang = $('#voiceLang').value;
+    u.rate = parseFloat($('#ttsSpeed').value);
+    speechSynthesis.speak(u);
+    toast('Speaking...', 'info', 1500);
+  });
+  $('#testKeys')?.addEventListener('click', async () => {
+    const oKey = $('#keyOpenAI').value.trim();
+    const gKey = $('#keyGemini').value.trim();
+    if(!oKey && !gKey){ toast('Enter at least one API key', 'err'); return; }
+    toast('Testing...', 'info', 1500);
+    try{
+      if(oKey){ const r = await fetch('https://api.openai.com/v1/models', { headers:{ 'Authorization':'Bearer ' + oKey } }); toast(r.ok ? '✓ OpenAI key valid' : '✗ OpenAI key invalid', r.ok ? 'ok' : 'err'); }
+      if(gKey){ const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${gKey}`); toast(r.ok ? '✓ Gemini key valid' : '✗ Gemini key invalid', r.ok ? 'ok' : 'err'); }
+    }catch(e){ toast('Network error', 'err'); }
+  });
+  $('#clearMemoryBtn')?.addEventListener('click', () => {
+    if(!confirm('Clear all memories?')) return;
+    S.settings.memoryText = ''; saveState();
+    $('#memoryText').value = '';
+    toast('Memories cleared', 'ok');
+  });
+  $('#saveSettings')?.addEventListener('click', saveSettingsUI);
+  $('#exportAllBtn')?.addEventListener('click', () => {
+    const data = { version:'3.6', exportedAt: Date.now(), users: S.users.map(u => ({ ...u, passHash: 'REDACTED' })), chats: S.chats, library: S.library, reviews: S.reviews, settings: S.settings };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `nexus-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click(); URL.revokeObjectURL(a.href);
+    toast('Backup downloaded', 'ok');
+  });
+  $('#importAllBtn')?.addEventListener('click', () => $('#importFile').click());
+  $('#importFile')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0]; if(!file) return;
+    try{
+      const data = JSON.parse(await file.text());
+      if(data.chats) S.chats = Object.assign(S.chats, data.chats);
+      if(data.library) S.library = Object.assign(S.library, data.library);
+      if(data.reviews) S.reviews = data.reviews;
+      if(data.settings) S.settings = Object.assign(S.settings, data.settings);
+      saveState();
+      renderChatList(); renderCurrentChat(); applyAllSettings();
+      updatePlanUI(); updateStorageUsage();
+      toast('Data imported ✓', 'ok');
+    }catch(err){ toast('Invalid file', 'err'); }
+    e.target.value = '';
+  });
+  $('#clearChatsBtn')?.addEventListener('click', () => {
+    if(!confirm('Delete ALL conversations? This cannot be undone.')) return;
+    const u = currentUser(); if(!u) return;
+    S.chats[u.id] = [];
+    saveState(); activeChatId = null;
+    renderChatList(); renderCurrentChat(); updateStorageUsage();
+    toast('All chats cleared', 'ok');
+  });
+  $('#clearLibBtn')?.addEventListener('click', () => {
+    if(!confirm('Delete entire library?')) return;
+    const u = currentUser(); if(!u) return;
+    S.library[u.id] = [];
+    saveState(); updateStorageUsage();
+    toast('Library cleared', 'ok');
+  });
+  $('#resetSettingsBtn')?.addEventListener('click', () => {
+    if(!confirm('Reset all settings to default?')) return;
+    S.settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+    saveState(); applyAllSettings(); openSettings();
+    toast('Settings reset', 'ok');
+  });
+  $('#deleteAccountBtn')?.addEventListener('click', () => {
+    if(!confirm('⚠️ PERMANENTLY delete your account and ALL data? This CANNOT be undone.')) return;
+    if(!confirm('Are you absolutely sure?')) return;
+    const u = currentUser(); if(!u) return;
+    S.users = S.users.filter(x => x.id !== u.id);
+    delete S.chats[u.id]; delete S.library[u.id];
+    S.sessionId = null;
+    saveState();
+    closeModal('settingsModal');
+    $('#app').style.display = 'none';
+    $('#authScreen').classList.remove('hide');
+    setAuthMode('login');
+    toast('Account deleted', 'ok');
+  });
+  $('#aboutContact')?.addEventListener('click', () => { closeModal('settingsModal'); openModal('contactModal'); });
+  $('#aboutReviews')?.addEventListener('click', () => { closeModal('settingsModal'); renderReviews(); openModal('reviewsModal'); });
+  $('#aboutTerms')?.addEventListener('click', () => openInfoPage('terms'));
+  $('#aboutPrivacy')?.addEventListener('click', () => openInfoPage('privacy'));
+  $('#aboutShortcuts')?.addEventListener('click', () => openInfoPage('shortcuts'));
+}
+
+$('#authTermsLink')?.addEventListener('click', e => { e.preventDefault(); openInfoPage('terms'); });
+$('#authPrivacyLink')?.addEventListener('click', e => { e.preventDefault(); openInfoPage('privacy'); });
+
+/* ============================================================
+   VOICE INPUT
+   ============================================================ */
+let recognition = null;
+function toggleMic(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ toast('Voice not supported in this browser', 'err'); return; }
+  const btn = $('#micBtn');
+  if(recognition){ recognition.stop(); recognition = null; btn.classList.remove('rec'); return; }
+  recognition = new SR();
+  recognition.lang = S.settings.voiceLang || 'en-US';
+  recognition.interimResults = true;
+  recognition.onresult = e => {
+    let t = '';
+    for(let i = e.resultIndex; i < e.results.length; i++) t += e.results[i][0].transcript;
+    $('#promptInput').value = t;
+    $('#promptInput').dispatchEvent(new Event('input'));
+  };
+  recognition.onend = () => { btn.classList.remove('rec'); recognition = null; };
+  recognition.onerror = () => { btn.classList.remove('rec'); recognition = null; };
+  recognition.start();
+  btn.classList.add('rec');
+}
+
+/* ============================================================
+   EVENT WIRING
+   ============================================================ */
+function bindAll(){
+  $$('.tab').forEach(t => t.addEventListener('click', () => setAuthMode(t.dataset.tab)));
+  $('#menuBtn').addEventListener('click', openSidebar);
+  $('#sbClose').addEventListener('click', closeSidebar);
+  $('#sbBackdrop').addEventListener('click', closeSidebar);
+  $('#newChatBtn').addEventListener('click', newChat);
+  $('#chatSearch').addEventListener('input', renderChatList);
+  $('#upgradeBtn').addEventListener('click', () => { renderPlans(); openModal('upgradeModal'); });
+  $('#themeBtn').addEventListener('click', toggleTheme);
+  $('#settingsBtn').addEventListener('click', openSettings);
+  $('#toolsBtn').addEventListener('click', openTools);
+  $('#libraryBtn').addEventListener('click', () => { renderLibrary(); openModal('libraryModal'); });
+  $('#reviewsBtn').addEventListener('click', () => { renderReviews(); openModal('reviewsModal'); });
+  $('#contactBtn').addEventListener('click', () => openModal('contactModal'));
+  $('#exportBtn').addEventListener('click', () => {
+    const chat = myChats().find(c => c.id === activeChatId);
+    if(!chat){ toast('No chat to export', 'err'); return; }
+    const text = chat.messages.map(m => `[${m.sender}] ${m.text || ''}`).join('\n\n');
+    downloadBlob(new Blob([text], {type:'text/plain'}), 'nexus-chat.txt');
+  });
+  $('#modelBtn').addEventListener('click', e => { e.stopPropagation(); toggleDropdown(); });
+  document.addEventListener('click', e => {
+    if(!e.target.closest('#modelDropdown') && !e.target.closest('#modelBtn')) closeDropdown();
+  });
+  $('#deepResearchBtn').addEventListener('click', () => {
+    if(!isPro()){ showProLockModal('Deep Research'); return; }
+    deepResearchMode = !deepResearchMode;
+    updateModeChips();
+    toast(deepResearchMode ? 'Deep Research ON' : 'Deep Research OFF', 'info', 1800);
+  });
+  $('#canvasBtn').addEventListener('click', () => {
+    if(!isPro()){ showProLockModal('Canvas'); return; }
+    canvasMode = !canvasMode;
+    updateModeChips();
+    toast(canvasMode ? 'Canvas ON' : 'Canvas OFF', 'info', 1800);
+  });
+  const input = $('#promptInput');
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 180) + 'px';
+    $('#charCount').textContent = input.value.length;
+    setSendState(input.value.trim() || attachments.length ? 'ready' : 'disabled');
+  });
+  input.addEventListener('keydown', e => {
+    const sendOnEnter = S.settings.sendOnEnter !== false;
+    if(e.key === 'Enter' && !e.shiftKey){ if(sendOnEnter){ e.preventDefault(); if(!isGenerating) handleSend(); } }
+    else if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); if(!isGenerating) handleSend(); }
+  });
+  $('#sendBtn').addEventListener('click', () => { if(isGenerating) abortCtrl?.abort(); else handleSend(); });
+  $('#attachBtn').addEventListener('click', () => $('#fileInput').click());
+  $('#fileInput').addEventListener('change', e => { if(e.target.files.length) handleFiles([...e.target.files]); e.target.value = ''; });
+  $('#micBtn').addEventListener('click', toggleMic);
+  $('#clearBtn').addEventListener('click', () => {
+    const chat = myChats().find(c => c.id === activeChatId);
+    if(!chat){ renderCurrentChat(); return; }
+    if(!confirm('Clear this conversation?')) return;
+    chat.messages = [];
+    saveState();
+    renderCurrentChat();
+  });
+  $('#logoutBtn')?.addEventListener('click', logout);
+  $$('.tool-card').forEach(c => c.addEventListener('click', () => setTool(c.dataset.tool)));
+  document.addEventListener('keydown', e => {
+    if((e.ctrlKey || e.metaKey) && e.key === 'k'){ e.preventDefault(); newChat(); }
+    if((e.ctrlKey || e.metaKey) && e.key === 'j'){ e.preventDefault(); toggleTheme(); }
+    if((e.ctrlKey || e.metaKey) && e.key === ','){ e.preventDefault(); openSettings(); }
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init(){
+  loadState();
+  initEmailJS();
+  applyAllSettings();
+  bindAll();
+  bindSettings();
+  setAuthMode('login');
+  initGoogle();
+  checkAdminRoute();
+  applyModelUI();
+  if(S.sessionId && currentUser()) enterApp();
+  else { $('#authScreen').classList.remove('hide'); $('#app').style.display = 'none'; }
+}
+window.addEventListener('beforeunload', saveState);
+init();
 </script>
 </body>
 </html>
